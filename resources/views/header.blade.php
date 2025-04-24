@@ -14,17 +14,17 @@
 <script>alert("{{$message}}");</script>
 @enderror
 
-<div class="content">
-    <nav class="">
-        <div class="">
-            <a class="" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>
-            <a class="" href="{{route('courses')}}">Все курсы</a>
+<div class="df fdr_c g2 ali_c w98_9vx  pos_r ">
+    <nav class="df fdr_r ali_c pos_f w94_9 h4 bg_lp t2 br_rb_0_5 br_lb_0_5 jc_spb plr_1">
+        <div class="df fdr_r g3 ali_c">
+            <a class="td_n df fdr_r g1 ali_c" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>
+            <a class="td_n ff_m c_dp fsz_1" href="{{route('courses')}}">Все курсы</a>
             {{--<a class="td_n ff_m c_dp fsz_1" href="{{route('categories_main')}}">Категории</a>--}}
         </div>
-        <div class="">
+        <div class="df fdr_r g1 ali_c">
             @guest
-                <a class="" href="{{route('signup')}}">Зарегистрироваться</a>
-                <a class="" href="{{route('login')}}">Войти</a>
+                <a class="btn_purple td_n ff_m c_dp fsz_1" href="{{route('signup')}}">Зарегистрироваться</a>
+                <a class="btn_purple td_n ff_m c_dp fsz_1" href="{{route('login')}}">Войти</a>
             @endguest
             @auth
                 <a class="td_n ff_m c_dp fsz_1" href="{{route('student_account')}}">Аккаунт</a>
@@ -33,10 +33,10 @@
             @endauth
         </div>
     </nav>
-    <div class="">
+    <div class="min_h34 mt_1 df fdr_c g1">
     @yield('content')
     </div>
-</div>
+    </div>
     <!-- footer -->
     <div class="df fdr_r ali_c jc_c w98_9vx bg_lp">
         <div class=" df fdr_r jc_spb w72 h8 paa_2 ">
