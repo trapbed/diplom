@@ -4,7 +4,7 @@
 @section('content')
     <div class="pb_1 df fdr_r ali_c jc_spb g2  br_1 bg_w w87_5 pos_f mtm_1">
         <div class="df fdr_r g4 ali_c">
-            <h4 class="fsz_1_5 ff_ml c_dp w10">Мои курсы</h4>
+            <h4 class="fsz_1_5 ff_ml c_dp">Автор/ Мои курсы</h4>
             <a href="{{route('create_course_show')}}" class="td_n df ali_c jc_c br_03 w2_5 h2_5 btn_dp_lp w_a ff_m fsz_2 ">+</a>
         </div>
         

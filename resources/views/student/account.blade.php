@@ -1,7 +1,13 @@
 @extends('header')
 @section('title', 'Аккаунт')
 @section('content')
-    <div class="h4 w94_9"></div>
+
+    @if ($errors->any())
+            @foreach ($errors->all() as $error)
+                <script>alert('{{ $error }}');</script>
+            @endforeach
+    @endif
+    <div class="h8 w94_9"></div>
     <div class="df frd_r als_c g12 ff_mr fsz_1_2">
         <div class="df fdr_c g2 brc_lp paa_1 br_03">
             <div class="df fdr_r g1">

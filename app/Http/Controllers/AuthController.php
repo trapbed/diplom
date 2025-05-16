@@ -51,7 +51,7 @@ class AuthController extends Controller
             ]);
             Auth::login($user);
             if(Auth::user()->role == 'student'){
-                return redirect()->route('main');
+                return redirect()->route('main')->withErrors(['mess'=>'Успешная регистрация!']);
 
             }
             else if(Auth::user()->role == 'author'){
@@ -64,6 +64,7 @@ class AuthController extends Controller
             }
         }
     }
+
     public function login_db(Request $request){
         $user_check = User::where('email', '=', $request->email)->exists();
         if(strlen(trim($request->email))!= 0 && strlen(trim($request->pass))!=0){
@@ -74,15 +75,15 @@ class AuthController extends Controller
                 if(Hash::check($request->pass, $pass)){
                     Auth::login( User::find($id));
                     if(Auth::user()->role == 'student'){
-                        return redirect()->route('main');
+                        return redirect()->route('main')->withErrors(['mess'=>'Успешная авторизация!']);
         
                     }
                     else if(Auth::user()->role == 'author'){
-                        return redirect()->route('main_author');
+                        return redirect()->route('main_author')->withErrors(['mess'=>'Успешная авторизация в роли автора!']);
         
                     }
                     else if(Auth::user()->role == 'admin'){
-                        return redirect()->route('main_admin');
+                        return redirect()->route('main_admin')->withErrors(['mess'=>'Успешная авторизация в роли админа!']);
         
                     }
                 }
@@ -103,6 +104,7 @@ class AuthController extends Controller
         }
         
     }
+
     public function logout(){
             Auth::logout();
             return redirect()->route('login');
@@ -126,14 +128,14 @@ class AuthController extends Controller
                     return redirect()->route('login')->withErrors(['err'=>'Сообщение с временным паролем отправлено!']);
                 }
                 else{
-                    return back()->withErrors(['err'=>'Не удалось отправить временный пароль!']);
+                    return back()->withErrors(['mess'=>'Не удалось отправить временный пароль!']);
                 }
             }
             else{
                 return back()->withErrors(['mess'=>'Не удалось сохранить временный пароль!']);
             }
         }else{
-            return back()->withErrors(['error'=>'Нет такого пользователя!']);
+            return back()->withErrors(['mess'=>'Нет такого пользователя!']);
         }
     
 

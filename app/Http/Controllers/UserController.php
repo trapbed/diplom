@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
+use App\Models\Grade;
+use App\Models\LessonTest;
 use Auth;
 use Hash;
 use Illuminate\Http\Request;
@@ -16,11 +18,16 @@ class UserController extends Controller
 {
     //
     public function account_info(){
-        $all_c = false;
-        $completed_c = false;
+        $all_c = 0;
+        $completed_c = 0;
         if(Auth::user()->role == 'student'){
-            $completed_c = count(json_decode(Auth::user()->completed_courses)->courses);
-            $all_c = count(json_decode(Auth::user()->all_courses)->courses);
+            // dd(Auth::user()->completed_courses);
+            if(Auth::user()->completed_courses != null){
+                $completed_c = count(json_decode(Auth::user()->completed_courses)->courses);
+            }
+            if(Auth::user()->all_courses != null){
+                $all_c = count(json_decode(Auth::user()->all_courses)->courses);
+            }
         }
        
         // dump($completed_c, $all_c);
@@ -57,7 +64,7 @@ class UserController extends Controller
                     ]);
                 }
                 else{
-                    return back()->withErrors(['success'=>'Пользователь с такой почтой уже есть!']);
+                    return back()->withErrors(['mess'=>'Пользователь с такой почтой уже есть!']);
                 }
             
                 // dd($check_email);
@@ -73,10 +80,10 @@ class UserController extends Controller
             // }
 
             if($update){
-                return back()->withErrors(['success'=>'Успешное обновление данных!']);
+                return back()->withErrors(['mess'=>'Успешное обновление данных!']);
             }
             else{
-                return back()->withErrors(['error'=>'Не удалось обновить данные!']);
+                return back()->withErrors(['mess'=>'Не удалось обновить данные!']);
             }
         }
     }
@@ -90,10 +97,10 @@ class UserController extends Controller
         $blocked = User::where('id', '=', $id_user)->update(['blocked'=>$blocked]);
         $all_users = User::select('id','name','email','role','password', 'blocked')->get();
         if($blocked){
-            return back()->with(['mess'=>'Доступ изменен!', 'users'=>$all_users]);
+            return redirect()->route('main_admin')->withErrors(['mess'=>'Доступ изменен!']);
         }
         else{
-            return back()->with(['mess'=>'Не удалось изменить доступ!', 'users'=>$all_users]);
+            return back()->withErrors(['mess'=>'Не удалось изменить доступ!', 'users'=>$all_users]);
         }
     }
 
@@ -122,10 +129,10 @@ class UserController extends Controller
                 'password'=>Hash::make($request->password)
             ]);
             if($new_pass){
-                return back()->withErrors(['success'=>'Успешное изменение пароля!']);
+                return back()->withErrors(['mess'=>'Успешное изменение пароля!']);
             }
             else{
-                return back()->withErrors(['error'=>'Не удалось изменить пароль!']);
+                return back()->withErrors(['mess'=>'Не удалось изменить пароль!']);
             }
         }
     }
@@ -136,14 +143,14 @@ class UserController extends Controller
             $update_role = User::where('id','=',$id_user)->update(['role'=>$role]);
             if($update_role){
                 $update_user_appl = UserApplication::where('id','=', $id_appl)->update(['status_appl'=>$status_appl]);
-                return back()->with(['mess'=>'Успешное изменение роли!']);
+                return back()->withErrors(['mess'=>'Успешное изменение роли!']);
             }
             else{
-                return back()->with(['mess'=>'Не удалось изменить роль']);
+                return back()->withErrors(['mess'=>'Не удалось изменить роль']);
             }
         }else{
             $update_user_appl = UserApplication::where('id','=', $id_appl)->update(['status_appl'=>$status_appl]);
-            return back()->with(['mess'=>'Успешная отмена заявки!']);
+            return back()->withErrors(['mess'=>'Успешная отмена заявки!']);
         }
     }
 
@@ -174,10 +181,10 @@ class UserController extends Controller
             'student_count'=>$old_student_count+1
         ]);
         if($update_all_courses){
-            return redirect()->route('one_course_main', ['id_course'=>$id_course])->withErrors(['success'=>'Вы получили этот курс!']);
+            return redirect()->route('one_course_main', ['id_course'=>$id_course])->withErrors(['mess'=>'Вы получили этот курс!']);
         }
         else{
-            return back()->withErrors(['success'=>'Не удалось получить этот курс!']);
+            return back()->withErrors(['mess'=>'Не удалось получить этот курс!']);
         }
     }
 
@@ -202,11 +209,14 @@ class UserController extends Controller
             'completed_courses'=>$complete_courses
         ]);
         if($update_completed_courses){
-            return redirect()->route('one_course_main', ['id_course'=>$id_course])->withErrors(['success'=>'Вы завершили этот курс!']);
+            return redirect()->route('one_course_main', ['id_course'=>$id_course])->withErrors(['mess'=>'Вы завершили этот курс!']);
         }
         else{
-            return back()->withErrors(['success'=>'Не удалось завершить этот курс!']);
+            return back()->withErrors(['mess'=>'Не удалось завершить этот курс!']);
         }
         // dd($id_course, $complete_check);
     }
+
+
+    
 }

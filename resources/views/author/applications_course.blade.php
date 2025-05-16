@@ -2,7 +2,7 @@
 
 @section('title', 'Заявки')
 @section('content')
-<h4 class="ff_ml fsz_1_5 c_dp h3">Мои заявки</h4>
+<h4 class="ff_ml fsz_1_5 c_dp h3">Автор/ Мои заявки</h4>
 <div class="df fdr_c g3 w78 c_dp">
         <div class="df fdr_r g4 ff_m fsz_1">
             <div class="w12">Название курса</div>

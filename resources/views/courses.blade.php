@@ -5,7 +5,7 @@
 <?php
     // dump($count_courses);
 ?>
-<div class="w100 h3"></div>
+<div class="w100 h8"></div>
 <div class="df fdr_r ali_c jc_spa g2 paa_1 br_1 bg_lp_a40">
     <form action="{{route('courses')}}" method="GET" class="df fdr_r ali_c jc_spa g2">
         <input value="{{$old_search}}" type="text" name="search" class="w26 fsz_1 ff_mr ou_n paa_0_5 h1 brc_lp br_1 bg_w br_1" placeholder="Поиск">
@@ -31,7 +31,7 @@
     <span class="ff_ml fsz_1">Результатов: {{$count_courses}}</span>
 </div>
 
-
+{{-- dd($courses, $all_courses, $completed_courses) --}}
 <div class="df fdr_c g3 w100 ">
     @if($count_courses == 0)
         <span class="fsz_1_2 ff_mr c_gr">Нет результатов</span>
@@ -58,6 +58,11 @@
                 <div class="w20 pdng_course  df fdr_c g1  br_1 brc_lp  ">
                     
                     <h6 class="fsz_1 ff_mr c_dp">{{$course->title}}</h6>
+                        @if (in_array( $course->id, $completed_courses) )
+                            <span class="pos_a paa_0_3 bg_lg ff_m fsz_0_8 t_2 r_1_5 c_dg br_30">Завершен</span>
+                        @elseif(in_array($course->id, $all_courses))
+                            <span class="pos_a paa_0_3 bg_lp ff_m fsz_0_8 t_2 r_1_5 c_dp br_30">Начат</span>
+                        @endif
                     <div class="df dfr_r jc_spb">
                         <span class="paa_0_3 ff_ml c_w fsz_0_8 bg_dp br_03  ">{{$course->category}}</span>
                         <span class="fsz_0_8 ff_mr c_dp als_e">Автор: {{$course->author}}</span>

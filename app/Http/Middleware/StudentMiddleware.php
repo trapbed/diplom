@@ -19,7 +19,8 @@ class StudentMiddleware
     public function handle(Request $request, Closure $next): Response
     {
         if (Auth::user()->role != 'student') {
-            return back()->with(['mess'=>'Вам не доступна эта страница!']); // Перенаправляем на страницу ошибки
+            dd('cdsfv');
+            return redirect()->withErrors(['mess'=>'Вам не доступна эта страница!']); // Перенаправляем на страницу ошибки
         }
 
         // Если всё в порядке, передаём запрос дальше

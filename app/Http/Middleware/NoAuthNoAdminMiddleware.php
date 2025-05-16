@@ -23,7 +23,7 @@ class NoAuthNoAdminMiddleware
             //     return redirect()->route(Auth::user()->role.'_account')->with(['mess'=>'Вы не можете перейти на эту старницу.']); // Перенаправляем на страницу ошибки
             // }
             // else{
-                return redirect()->route('main_'.Auth::user()->role)->with(['mess'=>'Вы не можете перейти на эту старницу.']); // Перенаправляем на страницу ошибки
+                return redirect()->route('main_'.Auth::user()->role)->withErrors(['mess'=>'Вы не можете перейти на эту старницу.']); // Перенаправляем на страницу ошибки
             // }
         }
 

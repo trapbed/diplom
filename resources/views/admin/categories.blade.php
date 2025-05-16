@@ -19,10 +19,13 @@
       </form>
   </div>
 </div>
-
-<div class="w2 h2 bg_lp df ali_c jc_c fsz_1_5 br_03 c_dp" onclick="see_modal()">
-    +
+<div class="df fdr_r g1 ali_c">
+    <span class="ff_m fsz_1_5 c_dp">Админ/ Категории курсов</span>
+    <div class="w2 h2 bg_lp df ali_c jc_c fsz_1_5 br_03 c_dp" onclick="see_modal()">
+        +
+    </div>
 </div>
+
 
 @if (count($categories)>0)
     <div class="w100 h1"></div>

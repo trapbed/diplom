@@ -4,7 +4,7 @@
 @section('content')
 
 <div class="df fdr_r g2">
-    <a class="td_n fsz_1_5" href="{{route('main_admin')}}">Пользователи</a>
+    <a class="td_n fsz_1_5" href="{{route('main_admin')}}">Админ/ Пользователи</a>
     {{--<a class="td_n fsz_1" href="{{route('users_appl')}}">Заявки</a>--}}
 </div>
 
@@ -30,6 +30,7 @@
             @if(Auth::user()->id !== $user->id)
             <?php
                 $status = $user->blocked == '1' ? 'Заблокирован' : 'Разблокирован';
+                // dump($status);
                 $action = $user->blocked == '1' ? 'Разблокировать' : 'Заблокировать';
                 $color_btn = $user->blocked == '1' ? 'bg_lg' : 'bg_lr';
                 $bg_color_btn = $user->blocked == '1' ? 'c_dg' : 'c_dr';
@@ -40,7 +41,7 @@
                     <td>{{$user->name}}</td>
                     <td>{{$user->email}}</td>
                     <td>{{$user->role}}</td>
-                    <td>{{$status}}</td>
+                    <td>{{--$status--}}</td>
                     <td><a class="fsz_0_8 br_03 ff_mr  td_n paa_0_3 {{$color_btn}} {{$bg_color_btn}}" href="{{route('change_blocked',['id_user'=> $user->id, 'blocked'=>$to])}}">{{$action}}</a></td>
                 </tr>
                 @else
@@ -48,7 +49,7 @@
                     <td>{{$user->name}}</td>
                     <td>{{$user->email}}</td>
                     <td>{{$user->role}}</td>
-                    <td>{{$status}}</td>
+                    <td>{{--$status--}}</td>
                     <td></td>
                 </tr>
                 @endif

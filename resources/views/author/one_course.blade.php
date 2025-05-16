@@ -27,16 +27,25 @@
     </div>
     
     <div class="df fdr_c g1">
-        <span class="fsz_1_7 ff_m c_dp">Уроки</span>
-        <a class="ff_mr fsz_1 btn_dp_lp w_au paa_0_5 br_03 td_n" href="{{route('create_lesson_show', $course->id)}}">Добавить урок</a>
-
+        <span class="fsz_1_7 ff_m c_dp">Уроки и тесты</span>
+        <div class="df fdr_r g2">
+            <a class="ff_mr fsz_1 btn_dp_lp w_au paa_0_5 br_03 td_n" href="{{route('create_lesson_show', $course->id)}}">
+                Добавить урок
+            </a>
+            <a class="ff_mr fsz_1 btn_dp_lp w_au paa_0_5 br_03 td_n" href="{{route('create_test_show', $course->id)}}">
+                Добавить тест
+            </a>
+        </div>
         @if ($count_lessons == 0)
             <span class="fsz_1 ff_mr">Нет уроков</span>
         @else
         <ul class="df fdr_c g0_5 ff_mr fsz_1">
             @foreach ($lessons as $lesson)
+                <?php
+                    $img_les_test = $lesson->type == 'test' ? 'testing' : 'book-mark';
+                ?>
                 <li class="df fdr_r jc_spb w48">
-                    <span>{{$lesson->title}}</span> <div class="df fdr_r g1"><a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('one_lesson', $lesson->id)}}">Смотреть</a> <a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('remove_lesson', ['id_less'=>$lesson->id, 'id_course'=>$course->id])}}">Удалить</a></div>
+                    <div><img class="w2 h2" src="{{ asset('img/icons/'.$img_les_test.'.png') }}" alt=""></div><span class="w30">{{$lesson->title}}</span> <div class="df fdr_r g1"><a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('one_lesson', $lesson->id)}}">Смотреть</a> <a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('remove_lesson', ['id_less'=>$lesson->id, 'id_course'=>$course->id])}}">Удалить</a></div>
                 </li>
             @endforeach
         </ul>

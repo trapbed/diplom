@@ -41,12 +41,12 @@ class CategoryController extends Controller
             // dd($create_category);
             if($create_category){
                 return back()
-                ->withErrors(['success'=>'Успешное создание категории!'])
+                ->withErrors(['mess'=>'Успешное создание категории!'])
                 ->withInput();
             }
             else{
                 return back()
-                ->withErrors(['error_db'=>'Не удалось создать категорию!'])
+                ->withErrors(['mess'=>'Не удалось создать категорию!'])
                 ->withInput();
             }
             // $user = User::create([
@@ -75,12 +75,12 @@ class CategoryController extends Controller
         $change_exist_category = Category::where('id','=',$id)->update(['exist'=>$exist]);
         if($change_exist_category){
             return back()
-            ->withErrors(['success'=>'Успешное обновление категории!'])
+            ->withErrors(['mess'=>'Успешное обновление категории!'])
             ->withInput();
         }
         else{
             return back()
-            ->withErrors(['error_db'=>'Не удалось обновить категорию!'])
+            ->withErrors(['mess'=>'Не удалось обновить категорию!'])
             ->withInput();
         }
         // dd($exist, $id);
@@ -90,6 +90,7 @@ class CategoryController extends Controller
         $cat_info = Category::select('*')->where('id','=', $id)->get()[0];
         return view('admin/edit_cat', ['cat'=>$cat_info]);
     }
+    
     public function edit_cat(Request $request){
         $data = [
             'title'=>$request->title
@@ -113,10 +114,10 @@ class CategoryController extends Controller
                 'title'=>$request->title
             ]);
             if($update){
-                return redirect('admin/categories_admin')->withErrors(['success'=>'Успешное изменение категории!']);
+                return redirect('admin/categories_admin')->withErrors(['mess'=>'Успешное изменение категории!']);
             }
             else{
-                return redirect('admin/edit_cat_show/'.$request->id)->withErrors(['error'=>'Не удалось изменить данные!'])->withInput();
+                return redirect('admin/edit_cat_show/'.$request->id)->withErrors(['mess'=>'Не удалось изменить данные!'])->withInput();
             }
         }
         // $edit_cat = '';

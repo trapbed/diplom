@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Course;
 use App\Models\Category;
 use App\Models\CourseApplication;
-use App\Models\Lesson;
+use App\Models\LessonTest;
+use App\Models\Test;
 use App\Models\User;
 
 use Auth;
@@ -48,6 +49,7 @@ class CourseController extends Controller
         $old_search = "";
         $old_cat = "";
         $old_order = "";
+        $user_course = "";
         // dump($request);
         $header = 'Все курсы';
         $all_access_courses = DB::table('courses')->select( 'courses.id',
@@ -57,14 +59,17 @@ class CourseController extends Controller
             'courses.image',
             'users.name as author',
             'courses.student_count',
-            'courses.test',
             'courses.created_at',
             'courses.access',
             'courses.appl',
-            DB::raw('COUNT(lessons.id) as lesson_count'));
+            DB::raw('COUNT(lesson_tests.id) as test'),
+            DB::raw('COUNT(lesson_tests.id) as lesson_count'));
+        
+        // if(Auth::check() == true){
+        //     $all_access_courses = $all_access_courses->addSelect('users.completed_lessons');
+        // }
         if(Auth::check()!= true || Auth::user()->role == 'student'){
             $all_access_courses = $all_access_courses->where('access','=', '1');
-    
         }
         if($request->search){
             $header = "Поиск '".$request->search."'";
@@ -87,7 +92,9 @@ class CourseController extends Controller
         }
         $all_access_courses = $all_access_courses->join('categories', 'categories.id', '=', 'courses.category')
                                                 ->join('users', 'users.id', '=', 'courses.author')
-                                                ->leftJoin('lessons', 'lessons.course_id', '=', 'courses.id')->groupBy('courses.id');
+                                                ->leftJoin('lesson_tests', 'lesson_tests.course_id', '=', 'courses.id')->
+                                                // ->leftJoin('tests', 'tests.course_id', '=', 'courses.id')->
+                                                groupBy('courses.id');
         
         $order_by = $request->order;
 
@@ -103,11 +110,17 @@ class CourseController extends Controller
         $all_access_courses = $all_access_courses->get();
 
         $categories = Category::select('id', 'title')->where('exist', '=', '1')->get();
+
+        if(Auth::check() == true && Auth::user()->role == 'student'){
+            $user_course = User::select('completed_courses', 'all_courses')->where('id', '=', Auth::user()->id)->get()[0];
+        }
+
         if(Auth::check()==true && Auth::user()->role == 'author'){
-            return view('author/courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>$all_access_courses->count(), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header]);
+            // dd($user_course);
+            return view('author/courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>count($all_access_courses), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header]);
         }
         else{
-            return view('courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>$all_access_courses->count(), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header]);
+            return view('courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>count($all_access_courses), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header, 'all_courses'=>json_decode($user_course->all_courses)->courses, 'completed_courses'=>json_decode($user_course->completed_courses)->courses]);
         }
         
     }
@@ -117,7 +130,8 @@ class CourseController extends Controller
         $has = false;
         $lessons = false;
         $complete = false;
-        $info_course = Course::select('courses.id', 'courses.title', 'categories.title as category','description','image','users.name as author','student_count', 'test')->where('courses.id','=', $id_course)
+        $completed_lessons = false;
+        $info_course = DB::table('courses')->select('courses.id', 'courses.title', 'categories.title as category','description','image','users.name as author','student_count')->where('courses.id','=', $id_course)
         ->join('users', 'users.id', '=', 'courses.author')
         ->join('categories', 'categories.id', '=', 'courses.category');
 
@@ -137,15 +151,27 @@ class CourseController extends Controller
                 $complete = in_array(intval($id_course), $competed_courses);
                 // dd($complete);
             }
+            $completed_lessons = Auth::user()->completed_lessons;
+            if($completed_lessons != null){
+                $completed_lessons = json_decode($completed_lessons)->lessons;
+            }
+
         }
-        if($has){
-            $lessons = Lesson::select('id','title')->where('course_id', '=', $id_course)->get();
-        }
-        // // dd($lessons);
+        // if($has){
+            $lessons = LessonTest::select('id','title')->where('course_id', '=', $id_course)->get();
+        // }
 
         if($info_course->exists() == true){
             $info_course= $info_course->get()[0];
-            return view('one_course', ['title'=>$info_course->title, 'course'=>$info_course, 'id'=>$id_course, 'has'=>$has, 'lessons'=>$lessons, 'complete'=>$complete]);
+            $id_lessons = [];
+            // $id_lessons = LessonTest::select('id')->where('course_id', '=', $id_course)->get();
+            foreach($lessons as $lesson){
+                array_push($id_lessons, $lesson->id);
+            }
+            // dd($completed_lessons, $id_lessons);
+            // dd($completed_lessons);
+            // dd($info_course->title, $info_course, $id_course, $has, $lessons, $complete);
+            return view('one_course', ['title'=>$info_course->title, 'course'=>$info_course, 'id'=>$id_course, 'has'=>$has, 'lessons'=>$lessons, 'complete'=>$complete, 'completed_lessons'=>$completed_lessons]);
         }
         else{
             return redirect()->route('courses');
@@ -153,7 +179,7 @@ class CourseController extends Controller
     }
 
     public function get_all_admin(){
-        $courses = Course::select('courses.id as course_id','courses.title as course_title','categories.title as category_title', 'description', 'users.name as author','access','test', 'courses.created_at')
+        $courses = Course::select('courses.id as course_id','courses.title as course_title','categories.title as category_title', 'description', 'users.name as author','access', 'courses.created_at')
         ->JOIN('users','users.id','=', 'courses.author')
         ->JOIN('categories','categories.id','=','courses.category')->get();
         // dd(count($courses));
@@ -162,14 +188,14 @@ class CourseController extends Controller
     public function change_access_course($access, $id_course){
         // dd($access, $id_course);
         $update = Course::where('id', '=', $id_course)->update(['access'=>$access]);
-        $courses = Course::select('courses.id as course_id','courses.title as course_title','categories.title as category_title', 'description', 'users.name as author','access','test', 'courses.created_at')
+        $courses = Course::select('courses.id as course_id','courses.title as course_title','categories.title as category_title', 'description', 'users.name as author','access', 'courses.created_at')
         ->JOIN('users','users.id','=', 'courses.author')
         ->JOIN('categories','categories.id','=','courses.category')->get();
         if($update){
-            return back()->with(['mess'=>'Доступ изменен!', 'courses'=>$courses]);
+            return redirect()->route('courses_admin')->withErrors(['mess'=>'Доступ изменен!']);
         }
         else{
-            return back()->with(['mess'=>'Не удалось изменить доступ!', 'courses'=>$courses]);
+            return redirect()->route('courses_admin')->withErrors(['mess'=>'Не удалось изменить доступ!']);
         }
         // return response()->json($request);
     }
@@ -180,10 +206,11 @@ class CourseController extends Controller
 // AUTHOR
     public function author_more_info_course($id){
         $course = Course::select('courses.id','courses.title', 'description', 'student_count', 'categories.title as category')->join('categories', 'courses.category', '=', 'categories.id')->where('courses.id', '=', $id)->get()[0];
-        $lessons = Lesson::select('*')->where('course_id', '=', $id)->get();
+        $lessons_task = LessonTest::select('*')->where('course_id', '=', $id)->get();
+        // dump($lessons);
         // dd($lessons);
-        $count_lessons = $lessons->count();
-        return view('author/one_course', ['course'=>$course, 'lessons'=>$lessons, 'count_lessons'=>$count_lessons]);
+        $count_lessons_task = $lessons_task->count();
+        return view('author/one_course', ['course'=>$course, 'lessons'=>$lessons_task, 'count_lessons'=>$count_lessons_task]);
     }
     public function create_course_show(){
         $categories = Category::select('id', 'title')->where('exist', '=', '1')->get();
@@ -230,10 +257,10 @@ class CourseController extends Controller
                 
                 $image = $request->file('image')->getClientOriginalName();
                 $upload = $request->file('image')->move(public_path()."/img/courses", $image);
-                return redirect()->route('main_author')->withErrors(['success'=>'Успешное создание курса!']);
+                return redirect()->route('main_author')->withErrors(['mess'=>'Успешное создание курса!']);
             }
             else{
-                return back()->withErrors(['error'=>'Не удалось создать курс!'])->withInput();
+                return back()->withErrors(['mess'=>'Не удалось создать курс!'])->withInput();
             }
         }
     }
@@ -293,18 +320,24 @@ class CourseController extends Controller
             if($update){
                 $categories = Category::select('id', 'title')->get();
                 $course = Course::select('id','category','title','description','image')->where('id','=', $request->id_course)->get()[0];
-                return redirect('author/update_course_show/'.$request->id_course)->withErrors(['success'=>'Успешное обновление курсa']);
+                return redirect('author/update_course_show/'.$request->id_course)->withErrors(['mess'=>'Успешное обновление курсa']);
             }
             else{
                 $categories = Category::select('id', 'title')->get();
                 $course = Course::select('id','category','title','description','image')->where('id','=', $request->id_course)->get()[0];
-                return redirect('author/update_course_show/'.$request->id_course)->withErrors(['error'=>'Не удалось обновить курс']);
+                return redirect('author/update_course_show/'.$request->id_course)->withErrors(['mess'=>'Не удалось обновить курс']);
             }
         }
     }
     public function data_for_create_course($id){
-        $course = Course::select('courses.*', DB::raw('COUNT(lessons.id) as lesson_count'))->where('courses.id', '=', $id)->leftJoin('lessons', 'lessons.course_id', '=', 'courses.id')->groupBy('courses.id')->get()[0];
+        $course = Course::select('courses.*', DB::raw('COUNT(lesson_tests.id) as lesson_count'))->where('courses.id', '=', $id)->leftJoin('lesson_tests', 'lesson_tests.course_id', '=', 'courses.id')->groupBy('courses.id')->get()[0];
         return view('author/create_lesson', ['course'=>$course]);
+    }
+
+    public function data_for_create_test($id){
+        $tests = LessonTest::select('*')->where('course_id', '=', $id)->get();
+        $course = Course::select('courses.*')->where('courses.id', '=', $id)->leftJoin('lesson_tests', 'lesson_tests.course_id', '=', 'courses.id')->groupBy('courses.id')->get()[0];
+        return view('author/create_test', ['test'=>$tests, 'course'=>$course]);
     }
 
     public function send_access($course_id, $wish_access){
@@ -316,9 +349,9 @@ class CourseController extends Controller
             $u_course = Course::where('id', '=', $course_id)->update([
                 'appl'=>'1'
             ]);
-            return redirect()->route('main_author')->withErrors(['success'=>'Заявка отправлена!'])->withInput();
+            return redirect()->route('main_author')->withErrors(['mess'=>'Заявка отправлена!'])->withInput();
         }else{
-            return redirect()->route('main_author')->withErrors(['error'=>'Не удалось отправить заявку!'])->withInput();
+            return redirect()->route('main_author')->withErrors(['mess'=>'Не удалось отправить заявку!'])->withInput();
         }
         // dd($course_id, $wish_access);
     }
@@ -342,10 +375,10 @@ class CourseController extends Controller
                 'status'=>$act
             ]);
             if($upd_appl){
-                return back()->withErrors(['success'=>'Заявка отклонена!']);
+                return back()->withErrors(['mess'=>'Заявка отклонена!']);
             }
             else{
-                return back()->withErrors(['error'=>'Не удалось отклонить заявку!']);
+                return back()->withErrors(['mess'=>'Не удалось отклонить заявку!']);
             }
         }
         else{
@@ -357,15 +390,216 @@ class CourseController extends Controller
                     'status'=>$act
                 ]);
                 if($upd_appl){
-                    return back()->withErrors(['success'=>'Заявка принята!']);
+                    return back()->withErrors(['mess'=>'Заявка принята!']);
                 }
                 else{
-                    return back()->withErrors(['error'=>'Не удалось принять заявку!']);
+                    return back()->withErrors(['mess'=>'Не удалось принять заявку!']);
                 }
             }
             else{
-                return back()->withErrors(['error'=>'Не удалось принять заявку!']);
+                return back()->withErrors(['mess'=>'Не удалось принять заявку!']);
             }
         }
+    }
+
+    // TESTS
+    public function create_test_db(Request $request){
+        // dd($request->request, $request->one_answer, $request->subsequence);
+        if($request->one_answer == null && $request->subsequence==null && $request->word == null && $request->some_answer == null){
+            return back()->withErrors(['mess'=>'Заполните тест контентом!']);
+        }
+        else{
+            $data = [
+                'course_id'=>$request->id_course,
+                'title_test'=>$request->title_test,
+                'timer'=>$request->timer
+            ];
+            $rule = [
+                'course_id'=>'required',
+                'title_test'=>'required',
+            ];
+            $mess = [
+                'course_id.required'=>'Курс не выбран!',
+                'title_test.required'=>'Заполните заголовок тестирования!',
+            ];
+    
+            
+            $content['title_test'] = $request->title_test;
+            $content['timer'] = $request->timer;
+            if(isset($request->one_answer)){
+                foreach($request->one_answer as $num_task=>$array){
+                        $data[$num_task]['one_answer_question'] = $array['question'];
+                        $data[$num_task]['one_answer_answers'] = $array['answers'];
+                        $data[$num_task]['one_answer_current'] = $array['current'];
+    
+                        $rule[$num_task.'.one_answer_question'] = ['required'];
+                        $rule[$num_task.'.one_answer_answers'] = ['min:3'];
+                        $rule[$num_task.'.one_answer_current'] = ['required'];
+                        
+                        $mess[$num_task.'.one_answer_question.required'] = 'Заполните поле вопроса в задании '.$num_task.'!';
+                        $mess[$num_task.'.one_answer_answers.min'] = 'Минимум 3 варианта ответа в задании '.$num_task.'!';
+                        $mess[$num_task.'.one_answer_current.required'] = 'Выберите верный варинт ответа в задании '.$num_task.'!';
+                        
+                        
+                        $validator = Validator::make($data, $rule, $mess);
+                        $content['content'][$num_task]['one_answer'] = $array;
+                }
+                // dd( $data, $rule, $mess);
+    
+                
+                // dump($request->one_answer);
+            }
+            if(isset($request->subsequence)){
+                foreach($request->subsequence as $num_task=>$array){
+                    $data[$num_task]['subsequence_question'] = $array['question'];
+                    $data[$num_task]['subsequence_answers'] = $array['answers'];
+    
+                    $rule[$num_task.'.subsequence_question'] = ['required'];
+                    $rule[$num_task.'.subsequence_answers'] = ['min:3'];
+                    
+                    $mess[$num_task.'.subsequence_question.required'] = 'Заполните поле вопроса в задании '.$num_task.'!';
+                    $mess[$num_task.'.subsequence_answers.min'] = 'Минимум 3 варианта ответа в задании '.$num_task.'!';
+                    
+                    $validator = Validator::make($data, $rule, $mess);
+                    $content['content'][$num_task]['subsequence'] = $array;
+                }
+                // dd( $data, $rule, $mess);
+            }
+            if(isset($request->word)){
+                foreach($request->word as $num_task=>$array){
+                    $data[$num_task]['word_question'] = $array['question'];
+                    $data[$num_task]['word_current'] = $array['current'];
+    
+                    $rule[$num_task.'.word_question'] = ['required'];
+                    $rule[$num_task.'.word_current'] = ['required'];
+                    
+                    $mess[$num_task.'.word_question.required'] = 'Заполните поле вопроса в задании '.$num_task.'!';
+                    $mess[$num_task.'.word_current.required'] = 'Заполните ответ в задании '.$num_task.'!';
+                    
+                    $validator = Validator::make($data, $rule, $mess);
+                    $content['content'][$num_task]['word'] = $array;
+                }
+            }
+            if(isset($request->some_answer)){
+                dd($request->some_answer);
+                foreach($request->some_answer as $num_task=>$array){
+                    $correct = isset($array['correct']) ? count($array['correct']) : 0;
+                    $incorrect = isset($array['incorrect']) ? count($array['incorrect']) : 0;
+                    // АЛФАВИТ
+                    $all_answers = $incorrect+$correct;
+                    // dd($array, $all_answers);
+                    $data[$num_task]['some_answer_question'] = $array['question'];
+                    $data[$num_task]['some_answer_incorrect'] = $array['incorrect'];
+                    $data[$num_task]['some_answer_correct'] = isset($array['correct']) ? $array['correct'] : '';
+    
+                    $rule[$num_task.'.some_answer_question'] = ['required'];
+                    $rule[$num_task.'.some_answer_incorrect'] = ['min:1'];
+                    $rule[$num_task.'.some_answer_correct'] = ['min:1'];
+                    
+                    $rule[$num_task.'.some_answer_question.required'] = 'Заполните текст вопроса в задании '.$num_task;
+                    $rule[$num_task.'.some_answer_incorrect.min'] = 'Минимум один ответ должен быть неверным '.$num_task;
+                    $rule[$num_task.'.some_answer_correct.min'] = 'Выберите минимум один правильный ответ в задании '.$num_task;
+                    // $mess[$num_task.'.some_answer.required'] = 'Заполните поле вопроса в задании '.$num_task.'!';
+                    // $mess[$num_task.'.some_answer.required'] = 'Заполните ответ в задании '.$num_task.'!';
+                    // dd($data, $rule, $mess);
+                    $validator = Validator::make($data, $rule, $mess);
+                    if($all_answers<3){
+                        $validator->errors()->add('count_some_answer_answers', 'В задании '.$num_task.' должно быть не меньше 3-х вариантов ответа!');
+                    }
+                    $content['content'][$num_task]['some_answer'] = $array;
+                }
+            }
+            // dump($content);
+            
+            // dump('Данные');
+            // dump($data);
+            // dump('Правила');
+            // dump($rule);
+            // dump('Сообщения');
+            // dump($mess);
+    
+            // dd($content);
+            if($validator->fails()){
+                // dd($mess);
+                return back()->withErrors($validator)->withInput();
+            }else{
+                $json_content = json_encode($content, JSON_UNESCAPED_UNICODE);
+
+                $new_test = DB::table('lesson_tests')->insert([
+                    'course_id'=>$request->id_course,
+                    'title'=>$request->title_test,
+                    'timer'=>$request->timer,
+                    'content'=>$json_content
+                ]);
+                if($new_test){
+                    return redirect()->route('author_more_info_course', ['id'=>$request->id_course])->withErrors(['mess'=>'Успешное создание теста!']);
+                }
+                else{
+                    return redirect()->route('author_more_info_course', ['id'=>$request->id_course])->withErrors(['mess'=>'Не удалось создать тест!']);
+                }
+                // dump($request->request);
+                // dd($json_content);
+            }
+        }
+        
+
+
+        // dump($request->request);
+
+
+        // if(isset($request->one_answer)){
+
+        // }
+        // if(isset($request->subsequence)){
+
+        // }
+        // if(isset($request->word)){
+
+        // }
+        // if(isset($request->some_answer)){
+
+        // }
+        // foreach($request->request as $name=>$value){
+        //     // dump( $name);
+        //     switch($name){
+        //         case 'timer':
+        //             dump($name, $request->timer);
+        //             // break;
+        //         case 'id_course':
+        //             dump($name, $request->id_course);
+                
+        //             // break;
+        //         case 'title':
+        //             dump($name, $request->title);
+                
+        //             // break;
+        //         case 'one_answer':
+        //             dump($name, $request->one_answer);
+                
+        //             // break;
+        //         case 'subsequence':
+        //             dump($name, $request->subsequence);
+                
+        //             // break;
+        //         case 'word':
+        //             dump($name, $request->word);
+                
+        //             // break;
+        //         case 'some_answer':
+        //             dump($name, $request->some_answer);
+                
+        //             break;
+        //         // case '':
+                
+        //         //     break;
+        //     }
+        // }
+
+
+        // return back();
+        // if(isset($request->one_answer_1_question)){
+        //     $data['one_answ_'] = $request->one_answer_1_question,
+        //     $data['']
+        // }
     }
 }

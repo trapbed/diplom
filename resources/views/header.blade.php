@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
     <script src="{{asset('js/jquery.min.js')}}"></script>
+    <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> -->
     <!-- <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}"> -->
 </head>
 <body class="">
@@ -14,26 +16,27 @@
 <script>alert("{{$message}}");</script>
 @enderror
 
-<div class="content">
-    <nav class="">
-        <div class="">
-            <a class="" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>
-            <a class="" href="{{route('courses')}}">Все курсы</a>
+<div id="content">
+    <nav id="header_student">
+        <div id="left_header_student">
+            <a class="left_header_student" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>
+            <a class="left_header_student" href="{{route('courses')}}">Все курсы</a>
             {{--<a class="td_n ff_m c_dp fsz_1" href="{{route('categories_main')}}">Категории</a>--}}
         </div>
-        <div class="">
+        <div id="right_header_student">
             @guest
-                <a class="" href="{{route('signup')}}">Зарегистрироваться</a>
-                <a class="" href="{{route('login')}}">Войти</a>
+                <a class="buttons_dp_lp" href="{{route('signup')}}">Зарегистрироваться</a>
+                <a class="buttons_dp_lp" href="{{route('login')}}">Войти</a>
             @endguest
             @auth
-                <a class="td_n ff_m c_dp fsz_1" href="{{route('student_account')}}">Аккаунт</a>
+                <a class="td_n ff_m c_dp fsz_1" href="{{route('student_account')}}">{{ Auth::user()->email }}</a>
                 <a class="td_n ff_m c_dp fsz_1" href="{{route('logout')}}"><img class="w1_5 h1_5" src="{{asset('img/logout.png')}}" alt=""></a>
 
             @endauth
         </div>
     </nav>
-    <div class="">
+    <!-- <br><br><br> -->
+    <div class="" id="content_student">
     @yield('content')
     </div>
 </div>

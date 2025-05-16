@@ -21,6 +21,10 @@ use App\Http\Controllers\UserController;
 // Route::get('/', function () {
 //     return view('welcome');
 // });
+
+Route::get('/html_to_pdf', function(){ return view('html_to_pdf');})->name('html_to_pdf');
+
+
 Route::middleware('no_admin_no_author')->group(function(){
     Route::get('/', [CourseController::class, 'main'])->name('main');
     Route::get('/courses/{search?}/{category?}/{order?}', [CourseController::class, 'main_courses'])->name('courses');
@@ -30,6 +34,7 @@ Route::middleware('no_admin_no_author')->group(function(){
     
 
 Route::middleware('no_auth')->group(function(){
+    // dd('aaa');
     Route::get('/login', function(){return view('login');})->name('login');
     Route::post('/login_db', [AuthController::class, 'login_db'])->name('login_db');
 
@@ -66,10 +71,15 @@ Route::middleware('auth')->group(function(){
     });    
     
     Route::middleware('student')->group(function(){
-        Route::get('start_study/{id_course}', [UserController::class, 'start_study'])->name('start_study');
-        Route::get('complete_course/{id_course}', [UserController::class, 'complete_course'])->name('complete_course');
-        Route::get('one_lesson_student/{id}/{course}', [LessonController::class, 'one_lesson_student'])->name('one_lesson_student');
+        // dd('dcsj');
+        Route::get('/start_study/{id_course}', [UserController::class, 'start_study'])->name('start_study');
+        Route::get('/complete_course/{id_course}', [UserController::class, 'complete_course'])->name('complete_course');
+        Route::get('/one_lesson_student/{id}/{course}', [LessonController::class, 'one_lesson_student'])->name('one_lesson_student');
         Route::get('/my_courses', [CourseController::class, 'my_courses'])->name('my_courses');
+
+        Route::post('/check_test_student', [LessonController::class, 'check_test_student'])->name('check_test_student');
+        Route::get('/certificate/{id_course}', [LessonController::class, 'certificate'])->name('certificate');
+        // Route::get('/result_test/{before_id?}/{next_id?}', [UserController::class, 're'])->name('check_test_student');
     });
 
     // $id_user, $id_appl, $role, $status_appl
@@ -88,12 +98,18 @@ Route::middleware('auth')->group(function(){
         Route::get('/remove_lesson/{id_less}/{id_course}', [LessonController::class, 'remove_lesson'])->name('remove_lesson');
         Route::get('/one_lesson/{id}', [LessonController::class, 'one_lesson'])->name('one_lesson');
 
+        Route::get('/create_test_show/{id}', [CourseController::class, 'data_for_create_test'])->name('create_test_show');
+        Route::post('/create_test', [LessonController::class, 'create_lesson'])->name('create_test');
+        Route::post('/create_test_db', [CourseController::class, 'create_test_db'])->name('create_test_db');
+
         Route::post('/add_to_dir', [LessonController::class, 'add_to_dir'])->name('add_to_dir');
         Route::get('/get_images_lesson', [LessonController::class, 'images_lesson'])->name('get_images_lesson');
         
         Route::get('/application_courses', [CourseController::class, 'application_courses'])->name('application_courses');
         Route::get('/send_access/{course_id}/{wish_access}', [CourseController::class, 'send_access'])->name('send_access');
     });
+
+
 });
 
 
