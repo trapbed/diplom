@@ -13,15 +13,16 @@
             $image.= 'default.png';
         }
 
-        $all_lessons = count($lessons);
-        $done_lessons = count($completed_lessons);
-        // dd($all_lessons, $done_lessons);
-        if($all_lessons != 0 ){
-            $process_lessons = $all_lessons-$done_lessons;
-            $done_percent = (100/$all_lessons)*$done_lessons;
+        if(Auth::check()){
+            $all_lessons = count($lessons);
+            $done_lessons = count($completed_lessons);
+            if($all_lessons != 0 ){
+                $process_lessons = $all_lessons-$done_lessons;
+                $done_percent = (count($compl_lessons_on_course)/$all_lessons)*100;
+            } 
         }
         
-        // dd($all_lessons, $done_lessons, $done_percent);
+        
     ?>
     <div class=" w74 h8"></div>
     
@@ -31,15 +32,12 @@
             <div class="df fdr_c  g1_5">
                 <h2 class="fsz_2_3 ff_ml c_dp">{{$course->title}}</h2>
                 <span class="paa_0_3 ff_ml c_w fsz_0_8 bg_dp br_03 w_au">{{$course->category}}</span>
-                <span class="fsz_1 ff_mr c_dp">{{$course->description}}</span>
+                <div class="df fdr_c g0_5">
+                    <span class="ff_mr fsz_1_2 c_dp">Описание</span>
+                    <span class="fsz_1 ff_mr c_dp">{{$course->description}}</span>
+                </div>
                 <span class="fsz_1 ff_mr c_dp">Учащихся: {{$course->student_count}}</span>
-                @if($complete != false && $process_lessons != 0)
-                    <div class="df fdr_ r g4">
-                        <div class="ff_mr fsz_0_8 bg_lg w_au paa_0_5 c_dg br_03">Завершен</div>
-                        <!-- <a href="{{ route('certificate', ['id_course'=>$course->id]) }}" class="ou_n td_n" id="get_certificate_on_course_page" >Сертификат </a> -->
-                        <span class="c_dp bg_lb ff_mr fsz_0_8 br_03 paa_0_5">Пройдите новые блоки</span>
-                    </div>
-                @elseif($complete != false)
+                @if($complete != false)
                     <div class="df fdr_ r g4">
                         <div class="ff_mr fsz_0_8 bg_lg w_au paa_0_5 c_dg br_03">Завершен</div>
                         <a href="{{ route('certificate', ['id_course'=>$course->id]) }}" class="ou_n td_n" id="get_certificate_on_course_page" >Сертификат </a>
@@ -54,14 +52,16 @@
             </div>
         </div>
 
-        <div class="df fdr_r g1 ali_c">
-            <div id="progress_line_course">
-                <div id="done_progress_line_course"></div>
+        @auth
+            <div class="df fdr_r g1 ali_c">
+                <div id="progress_line_course">
+                    <div id="done_progress_line_course"></div>
+                </div>
+                <span class="c_dp ff_m fsz_1">
+                    {{ round($done_percent) }}%
+                </span>
             </div>
-            <span class="c_dp ff_m fsz_1">
-                {{ round($done_percent) }}%
-            </span>
-        </div>
+        @endauth
         
 
         <div class="df fdr_c g3 ff_mr fsz_1 c_dp ptb_2">

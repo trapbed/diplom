@@ -184,6 +184,9 @@
 .w26{
     width: 26vmax;
 }
+.w27{
+    width: 27vmax;
+}
 .w29{
     width: 29vmax;
 }
@@ -521,7 +524,9 @@
 .brc_dp{
     border: 0.15vmax solid #54339e;
 }
-
+.brc_lg{
+    border: 0.15vmax solid #cfdfc4;
+}
 .pos_f{
     position: fixed;
     z-index: 100;

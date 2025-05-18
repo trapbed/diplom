@@ -74,6 +74,7 @@ class LessonController extends Controller
         ksort($array_data);
         $array_data = json_encode($array_data);
         $create = LessonTest::insert([
+            'type'=>'lesson',
             'title'=>$title,
             'course_id'=>$id,
             'content'=>($array_data)

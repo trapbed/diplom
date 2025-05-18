@@ -58,16 +58,19 @@
                 <div class="w20 pdng_course  df fdr_c g1  br_1 brc_lp  ">
                     
                     <h6 class="fsz_1 ff_mr c_dp">{{$course->title}}</h6>
-                        @if (in_array( $course->id, $completed_courses) )
-                            <span class="pos_a paa_0_3 bg_lg ff_m fsz_0_8 t_2 r_1_5 c_dg br_30">Завершен</span>
-                        @elseif(in_array($course->id, $all_courses))
-                            <span class="pos_a paa_0_3 bg_lp ff_m fsz_0_8 t_2 r_1_5 c_dp br_30">Начат</span>
+                        @if (Auth::check())
+                            @if ($completed_courses!=null && in_array( $course->id, $completed_courses) )
+                                <span class="pos_a paa_0_3 bg_lg ff_m fsz_0_8 t_2 r_1_5 c_dg br_30">Завершен</span>
+                            @elseif($all_courses!=null && in_array($course->id, $all_courses))
+                                <span class="pos_a paa_0_3 bg_lp ff_m fsz_0_8 t_2 r_1_5 c_dp br_30">Начат</span>
+                            @endif
                         @endif
+                        
                     <div class="df dfr_r jc_spb">
                         <span class="paa_0_3 ff_ml c_w fsz_0_8 bg_dp br_03  ">{{$course->category}}</span>
                         <span class="fsz_0_8 ff_mr c_dp als_e">Автор: {{$course->author}}</span>
                     </div>
-                    <span class="h4 fsz_0_8 ff_mr c_dp">{{$course->description}}</span>
+                    <span class="h4 fsz_0_8 ff_mr c_dp">{{substr($course->description, 0, 275)}}{{ mb_strlen($course->description)>275 ? '...' : '' }}</span>
                     <a class="paa_0_5 brc_lp fsz_1 ff_mr w_a br_1 btn_purple td_n c_dp" href="{{route('one_course_main', $course->id)}}">Подробнее</a>
                     {{--{{$course->title}}
                     {{$course->description}}

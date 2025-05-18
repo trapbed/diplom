@@ -113,6 +113,19 @@ class CourseController extends Controller
 
         if(Auth::check() == true && Auth::user()->role == 'student'){
             $user_course = User::select('completed_courses', 'all_courses')->where('id', '=', Auth::user()->id)->get()[0];
+            if($user_course->all_courses != null){
+                $all_courses = json_decode($user_course->all_courses)->courses;
+            }else{
+                $all_courses = null;
+            }
+            if($user_course->completed_courses != null){
+                $completed_courses = json_decode($user_course->completed_courses)->courses;
+            }else{
+                $completed_courses = null;
+            }
+        }else{
+            $all_courses = null;
+            $completed_courses = null;
         }
 
         if(Auth::check()==true && Auth::user()->role == 'author'){
@@ -120,7 +133,7 @@ class CourseController extends Controller
             return view('author/courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>count($all_access_courses), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header]);
         }
         else{
-            return view('courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>count($all_access_courses), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header, 'all_courses'=>json_decode($user_course->all_courses)->courses, 'completed_courses'=>json_decode($user_course->completed_courses)->courses]);
+            return view('courses', ['courses'=> $all_access_courses, 'categories'=>$categories, 'count_courses'=>count($all_access_courses), 'old_search'=>$old_search, "old_cat"=>$old_cat, 'old_order'=>$old_order, 'header'=>$header, 'all_courses'=>$all_courses, 'completed_courses'=>$completed_courses]);
         }
         
     }
@@ -160,6 +173,7 @@ class CourseController extends Controller
         // if($has){
             $lessons = LessonTest::select('id','title')->where('course_id', '=', $id_course)->get();
         // }
+        $arr_compl_lessons_on_course = [];
 
         if($info_course->exists() == true){
             $info_course= $info_course->get()[0];
@@ -167,11 +181,11 @@ class CourseController extends Controller
             // $id_lessons = LessonTest::select('id')->where('course_id', '=', $id_course)->get();
             foreach($lessons as $lesson){
                 array_push($id_lessons, $lesson->id);
+                if(in_array($lesson->id, $completed_lessons)){
+                    array_push($arr_compl_lessons_on_course, $lesson->id);
+                }
             }
-            // dd($completed_lessons, $id_lessons);
-            // dd($completed_lessons);
-            // dd($info_course->title, $info_course, $id_course, $has, $lessons, $complete);
-            return view('one_course', ['title'=>$info_course->title, 'course'=>$info_course, 'id'=>$id_course, 'has'=>$has, 'lessons'=>$lessons, 'complete'=>$complete, 'completed_lessons'=>$completed_lessons]);
+            return view('one_course', ['title'=>$info_course->title, 'course'=>$info_course, 'id'=>$id_course, 'has'=>$has, 'lessons'=>$lessons, 'complete'=>$complete, 'completed_lessons'=>$completed_lessons, 'compl_lessons_on_course'=>$arr_compl_lessons_on_course]);
         }
         else{
             return redirect()->route('courses');
@@ -205,7 +219,7 @@ class CourseController extends Controller
    
 // AUTHOR
     public function author_more_info_course($id){
-        $course = Course::select('courses.id','courses.title', 'description', 'student_count', 'categories.title as category')->join('categories', 'courses.category', '=', 'categories.id')->where('courses.id', '=', $id)->get()[0];
+        $course = Course::select('courses.id','courses.title', 'description','image', 'student_count', 'categories.title as category', 'courses.access as course_access')->join('categories', 'courses.category', '=', 'categories.id')->where('courses.id', '=', $id)->get()[0];
         $lessons_task = LessonTest::select('*')->where('course_id', '=', $id)->get();
         // dump($lessons);
         // dd($lessons);
@@ -250,6 +264,7 @@ class CourseController extends Controller
                 'title'=>$request->title,
                 'category'=>$request->category,
                 'description'=>$request->description,
+                'access'=>'0',
                 'image'=>$request->file('image')->getClientOriginalName()
             ]);
             // dd($create);
@@ -390,6 +405,9 @@ class CourseController extends Controller
                     'status'=>$act
                 ]);
                 if($upd_appl){
+                    $appl_in_course = Course::where('id','=',$id_course)->update([
+                        'appl'=>'0'
+                    ]);
                     return back()->withErrors(['mess'=>'Заявка принята!']);
                 }
                 else{
@@ -404,6 +422,7 @@ class CourseController extends Controller
 
     // TESTS
     public function create_test_db(Request $request){
+        // dd($request->old_html, $request->request);
         // dd($request->request, $request->one_answer, $request->subsequence);
         if($request->one_answer == null && $request->subsequence==null && $request->word == null && $request->some_answer == null){
             return back()->withErrors(['mess'=>'Заполните тест контентом!']);
@@ -450,7 +469,9 @@ class CourseController extends Controller
                 // dump($request->one_answer);
             }
             if(isset($request->subsequence)){
+                    // dd($request->subsequence);
                 foreach($request->subsequence as $num_task=>$array){
+                    // dd($array);
                     $data[$num_task]['subsequence_question'] = $array['question'];
                     $data[$num_task]['subsequence_answers'] = $array['answers'];
     
@@ -481,7 +502,6 @@ class CourseController extends Controller
                 }
             }
             if(isset($request->some_answer)){
-                dd($request->some_answer);
                 foreach($request->some_answer as $num_task=>$array){
                     $correct = isset($array['correct']) ? count($array['correct']) : 0;
                     $incorrect = isset($array['incorrect']) ? count($array['incorrect']) : 0;

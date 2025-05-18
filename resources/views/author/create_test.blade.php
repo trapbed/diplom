@@ -248,10 +248,10 @@
                     preview.append(cont_1);
                     let input_one_answer = document.createElement('label');
                     input_one_answer.setAttribute('for', 'one_answer_'+count_tasks);
-                    input_one_answer.setAttribute('id', 'one_answer_'+count_tasks);
+                    input_one_answer.setAttribute('id', 'one_answer_'+count_tasks+'_hidden');
                     input_one_answer.innerHTML = `
                         <input type="hidden" name="one_answer[`+count_tasks+`][question]" id="one_answer_`+count_tasks+`_question" value="">
-                        <select multiple="multiple" hidden name="one_answer[`+count_tasks+`][answers][]">
+                        <select id="one_answer_`+count_tasks+`_answers" multiple="multiple" hidden name="one_answer[`+count_tasks+`][answers][]">
                             <option value='Ответ 1' selected id="input_various_`+count_tasks+`_1">Ответ 1</option>
                         </select>
                         <input type="hidden" id="one_answer_`+count_tasks+`_current" name="one_answer[`+count_tasks+`][current]" value="">
@@ -305,7 +305,7 @@
                     
                     let label_inputs = document.createElement('label');
                     label_inputs.setAttribute('for', 'subsequence_'+count_tasks);
-                    label_inputs.setAttribute('id', 'subsequence_'+count_tasks);
+                    label_inputs.setAttribute('id', 'subsequence_'+count_tasks+'_hidden');
                     label_inputs.innerHTML = `
                         <input type="hidden" id="subsequence_`+count_tasks+`_question_hidden" name="subsequence[`+count_tasks+`][question]" value="">
                         <select multiple="multiple" hidden name="subsequence[`+count_tasks+`][answers][]">
@@ -357,7 +357,7 @@
 
                     let label_word = document.createElement('label');
                     label_word.setAttribute('for', 'word_'+count_tasks);
-                    label_word.setAttribute('id', 'word_'+count_tasks);
+                    label_word.setAttribute('id', 'word_'+count_tasks+'_hidden');
                     label_word.innerHTML = `
                         <input type="hidden" name="word[`+count_tasks+`][question]" id="word_`+count_tasks+`_question_hidden" value="">
                         <input type="hidden" name="word[`+count_tasks+`][current]" id="word_`+count_tasks+`_answer_hidden" value="">
@@ -409,12 +409,20 @@
                     `;
                     $('#choose_format_test_bg').css('display', 'none');
                     preview.append(choosed_type_is_some_answer);
+                        // 
 
+
+                    let label_q_sq =document.createElement('label');
+                    label_q_sq.setAttribute('for', 'some_answer_'+count_tasks+'_question');
+                    label_q_sq.setAttribute('id', 'some_answer_'+count_tasks+'_question');
+                    label_q_sq.innerHTML = `
+                        <input type="hidden" name="some_answer[`+count_tasks+`][question]" value="" id="some_answer_`+count_tasks+`_question_hidden">
+                    `;
+                    $('#preview_inputs').append(label_q_sq);
                     let new_label = document.createElement('label');
                     new_label.setAttribute('for', 'some_answer_'+count_tasks+'_incorrect');
                     new_label.setAttribute('id', 'some_answer_'+count_tasks+'_incorrect');
                     new_label.innerHTML = `
-                        <input type="hidden" name="some_answer[`+count_tasks+`][question]" value="" id="some_answer_`+count_tasks+`_question_hidden">
                         <input type="hidden" name="some_answer[`+count_tasks+`][incorrect][1]" id="some_answer_`+count_tasks+`_1_incorrect" value="Ответ 1">
                     `;
                     $('#preview_inputs').append(new_label);
@@ -428,13 +436,24 @@
         }     
         // УДАЛЕНИЕ ЗАДАЧИ
         function del_test_task(selector){
-            $('#'+selector).remove();
+            // console.log(selector.split('_')[]);
+            if(selector.split('_')[0] == 'some'){
+                $('#'+selector).remove();
+                $('#some_answer_'+selector.split('_')[2]+'_incorrect').remove();
+                $('#some_answer_'+selector.split('_')[2]+'_correct').remove();
+                $('#some_answer_'+selector.split('_')[2]+'_question').remove();
+            }else{
+                $('#'+selector).remove();
+                $('#'+selector+'_hidden').remove();
+            }
+           
         }
 
 
 
         // ОДИН ОТВЕТ
         function one_answer(event, input, task){
+            
             event.preventDefault();
             let count_tasks = $('.test_task');
             if(count_tasks){
@@ -468,7 +487,7 @@
                 new_option.setAttribute('value', val);
                 new_option.setAttribute('id', `input_various_1_`+count_one_answer_td);
                 new_option.innerHTML = ``+val+``;
-                $('#one_answer_'+task).find('select').append(new_option);
+                $('#one_answer_'+task+'_answers').append(new_option);
             }else{
                 alert('Заполните поле!');
             }
@@ -494,7 +513,7 @@
         }
 
         function del_one_answer_various(task, answer, td, event){
-            current_val = $('#preview_inputs').find('#one_answer_'+task).find('select').find('#input_various_'+task+'_'+answer).val();
+            current_val = $('#preview_inputs').find('#one_answer_'+task+'_hidden').find('select').find('#input_various_'+task+'_'+answer).val();
             if($(`#one_answer_`+task+`_current`).val() == current_val){
                 $(`#one_answer_`+task+`_current`).val('');
             }
@@ -505,8 +524,9 @@
             }else{
                 $('#attention_task_'+task).text('');
             }
+            // console.log(td);
             $('#'+td).remove();
-            $('#preview_inputs').find('#one_answer_'+task).find('select').find('#input_various_1_'+answer).remove();
+            $('#preview_inputs').find('#one_answer_'+task+'_hidden').find('select').find('#input_various_'+task+'_'+answer).remove();
         }
 
 
@@ -551,7 +571,7 @@
                 option_inputs.setAttribute('id', `subsequence_`+task_id+`_`+counter_list);
                 option_inputs.innerText = $('#'+task).val();
                 
-                $('#preview_inputs').find('#subsequence_'+task_num).find('select').append(option_inputs);
+                $('#preview_inputs').find('#subsequence_'+task_num+'_hidden').find('select').append(option_inputs);
                 // CLEAN INPUT
                 $('#'+task).val('');
             }
@@ -562,7 +582,7 @@
         
         function del_subsequence(selector, task, answer){
             $('#'+selector).remove();
-            $('#preview_inputs').find('#subsequence_'+task).find('select').find('#subsequence_'+task+'_'+answer).remove();
+            $('#preview_inputs').find('#subsequence_'+task+'_hidden').find('select').find('#subsequence_'+task+'_'+answer).remove();
             console.log(selector, task, answer);
         }
         
@@ -627,12 +647,11 @@
                 array_of_list[id_1] = array_of_list[id_1] || [];
                 array_of_list[id_1].push(id);
             });
-
             $.each(array_of_list, (id_task, array)=>{
-                let new_select = document.createElement('select');
-                new_select.setAttribute('multiple', true);
-                new_select.setAttribute('hidden', true);
-                new_select.setAttribute('name', 'subsequence['+id_task+'][answers]');
+                // let new_select = document.createElement('select');
+                // new_select.setAttribute('multiple', true);
+                // new_select.setAttribute('hidden', true);
+                // new_select.setAttribute('name', 'subsequence['+id_task+'][answers]');
 
                 let new_options = '';
                 $.each(array, (id_1, selector_id)=>{
@@ -640,8 +659,9 @@
                     id_answer = selector_id.charAt(13).toLowerCase();
                     new_options +='<option value="'+text_id+'" selected id="subsequence_'+id_task+'_'+id_answer+'">'+text_id+'</option>';
                 });
-                new_select.innerHTML = new_options;
-                $('#subsequence_'+id_task).html(new_select);
+                // new_select.innerHTML = new_options;
+
+                $('#subsequence_'+id_task+'_hidden').find('select').html(new_options);
             });
         }
        

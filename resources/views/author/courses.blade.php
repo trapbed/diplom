@@ -32,7 +32,7 @@
         <!-- <table class="table w87_5 "> -->
             <div class="w87">
                 <div class="df fdr_r fsz_1 pos_f bg_w ff_m w87 mtm_1_7 h2_2">
-                    <div class="w25 ">Название</div><!--w25-->
+                    <div class="w27 ">Название</div><!--w25-->
                     <div class="w12 ">Категория</div><!--w10-->
                     <div class="w7 ">Уроков</div><!--w7-->
                     <div class="w7 ">Студенты</div><!--w7-->
@@ -42,9 +42,10 @@
                 </div>
             </div>
             <div>
+
                 @foreach ($courses as $course)
                 <div class="df fdr_r fsz_1 ff_mr h3 w87">
-                    <div class="w25 ">{{$course->title}}</div>
+                    <div class="w27 ">{{$course->title}}</div>
                     <div class="w12 ">{{$course->category}}</div>
                     <div class="w7 ">{{$course->lesson_count}}</div>
                     <div class="w7 ">{{$course->student_count}}</div>
@@ -62,17 +63,34 @@
                         }
                     ?>
                     <div class="w5"><div class="df w2 h2 ali_c jc_c br_1 {{$color}}">{{html_entity_decode($access)}}</div></div>
-                    <div class="w10 "><a class="ff_mr fsz_1 c_dp" href="{{route('author_more_info_course', $course->id)}}">Подробнее</a></div>
+                    <div class="w10 "><a class="ff_mr fsz_1 c_dp" href="{{route('author_more_info_course', $course->id)}}">Содержание</a></div>
                     <div class="df fdr_r g1 w15 h2_5">
-                        <a class=" df ali_c jc_c ff_m fsz_0_8 h1 w6 paa_0_5 c_b  br_1 {{$color_btn}} td_n" href="{{$course->appl == 1 ? "" :route('send_access', ['course_id'=>$course->id, 'wish_access'=>$act12])}}">{{$act1}}</a>
+                        @if ($course->student_count == 0 && $course->lesson_count != 0)
+                            <span onclick="ask_send_appl('{{ $course->title }}',{{ $course->id }}, {{ $course->lesson_count }}, {{ $act12 }})" class=" df ali_c jc_c ff_m fsz_0_8 h1 w6 paa_0_5 c_b  br_1 {{$color_btn}} td_n" >{{$act1}}</span>
+                        @elseif($course->student_count == 0 && $course->lesson_count == 0)
+                            <span class=" df ali_c jc_c ff_m fsz_0_8 h1 w6 paa_0_5 c_b  br_1 td_n ta_c brc_lp c_dp" >Заполните курс</span>
+                        @else
+                            <span class=" df ali_c jc_c ff_m fsz_0_8 h1 w6 paa_0_5 c_b  br_1 td_n ta_c brc_lg c_dg" >В доступе</span>
+                        @endif
                         <a class="ff_m fsz_0_8 c_dp w7 paa_0_5 brc_lp  br_1 search_course td_n" href="{{route('update_course_show', $course->id)}}">Редактировать</a>
                     </div>
                 </div>
                 @endforeach
             </div>
-        <!-- </table> -->
         @else
             <span class="fsz_1_2 ff_mr c_dp">Нет курсов</span>
         @endif
     </div>
+    <script>
+        function ask_send_appl(course, course_id, count_lesson, wish_access){
+            let ask_course_appl = confirm('Вы уверенны, что хотите выложить курс: "'+course+'", содержащий '+count_lesson+' уроков и тестирований?');
+            if(ask_course_appl){
+                window.location.href = "../send_access/"+course_id+'/'+wish_access;
+            }else{
+                alert('Курс все еще скрыт!');
+            }
+        }
+    </script>
 @endsection
+
+{{-- href="{{$course->appl == 1 ? "" :route('send_access', ['course_id'=>$course->id, 'wish_access'=>$act12])}}" --}}

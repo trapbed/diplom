@@ -11,7 +11,7 @@
             <div class="w12">Дата обработки</div>
             <div class="w12">Статус</div>
         </div>
-        <div class="df fdr_c">
+        <div class="df fdr_c g1">
             @foreach ($appls as $appl)
                 <div class="df fdr_r g4 ff_mr fsz_1">
                     <?php
@@ -23,7 +23,23 @@
                     <div class="w8">{{$wish_btn}}</div>
                     <div class="w10">{{$appl->created_at}}</div>
                     <div class="w12">{{$updated_at}}</div>
-                    <div class="w12">{{$appl->status}}</div>
+                    <?php
+                        switch($appl->status){
+                            case 'Отправлена':
+                                $bg_color = 'bg_lgr';
+                                $color = 'c_b';
+                                break;
+                            case 'Принята':
+                                $bg_color = 'bg_lg';
+                                $color = 'c_dg';
+                                break;
+                            case 'Отклонена':
+                                $bg_color = 'bg_lr';
+                                $color = 'c_red';
+                                break;
+                        }
+                    ?>
+                    <div class="h1 paa_0_3 br_03 {{ $bg_color }} {{ $color }}">{{$appl->status}}</div>
                 </div>
             @endforeach
         </div>
