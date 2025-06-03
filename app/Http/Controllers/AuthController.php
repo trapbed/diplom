@@ -13,7 +13,6 @@ use App\Models\User;
 
 class AuthController extends Controller
 {
-    //
     public function signup(Request $request){
         $data = [
             'name'=>$request->name,
@@ -21,15 +20,13 @@ class AuthController extends Controller
             'pass'=>$request->pass
         ];
         $rules = [
-            'name'=>'required|min:6',
-            'email'=>'required|min:6|email|unique:users',
+            'name'=>'required|regex:/^[А-Я]{1}[а-я]+\s(([А-Я]{1}[а-я]+)|([А-Я]{1}[а-я]+\s[А-Я]{1}[а-я]+))$/u',
+            'email'=>'required|email|unique:users',
             'pass'=>'required|regex:/^[a-zA-Z0-9_]+$/|min:6'
         ];
         $messages = [
             'name.required'=>'Заполните имя',
-            'name.min'=>'Минимальная длина имени- 6 символов',
             'email.required'=>'Заполните почту',
-            'email.min'=>'Минимальная длина почты- 6 символов',
             'email.email'=>'Проверьте введенную почту',
             'email.unique'=>'Пользователь с такой почтой существует!',
             'pass.required'=>'Заполните пароль',
@@ -38,7 +35,7 @@ class AuthController extends Controller
         ];
         $validate = Validator::make($data, $rules, $messages);
         if($validate->fails()){
-            return redirect('signup')
+            return back()
             ->withErrors($validate)
             ->withInput();
         }
@@ -54,13 +51,8 @@ class AuthController extends Controller
                 return redirect()->route('main')->withErrors(['mess'=>'Успешная регистрация!']);
 
             }
-            else if(Auth::user()->role == 'author'){
-                return redirect()->route('main_author');
-
-            }
-            else if(Auth::user()->role == 'admin'){
-                return redirect()->route('main_admin');
-
+            else{
+                return back()->withErrors(['mess'=>'Не удалось зарегистрироваться!'])->withInput(['name'=>$request->name, 'email'=>$request->email, 'pass'=>$request->pass]);
             }
         }
     }
@@ -100,7 +92,7 @@ class AuthController extends Controller
             }
         }
         else{
-            return back()->withErrors(['empty'=>'Заполните все поля!'])->withInput();
+            return back()->withErrors(['mess'=>'Заполните все поля!'])->withInput();
         }
         
     }
@@ -132,7 +124,7 @@ class AuthController extends Controller
                 }
             }
             else{
-                return back()->withErrors(['mess'=>'Не удалось сохранить временный пароль!']);
+                return back()->withErrors(['mess'=>'Не удалось установить временный пароль!']);
             }
         }else{
             return back()->withErrors(['mess'=>'Нет такого пользователя!']);

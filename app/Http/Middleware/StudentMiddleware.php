@@ -18,8 +18,8 @@ class StudentMiddleware
      */
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::user()->role != 'student') {
-            dd('cdsfv');
+        if (Auth::check() == false || Auth::user()->role != 'student') {
+            
             return redirect()->withErrors(['mess'=>'Вам не доступна эта страница!']); // Перенаправляем на страницу ошибки
         }
 

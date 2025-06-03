@@ -2,6 +2,8 @@
 
 @section('title', $lesson->title)
 @section('content')
+<script src="https://cdn.jsdelivr.net/npm/fuse.js@7.1.0"></script>
+
 
 <div class=" w80 h6"></div>
 <div id="content_tests" class="df fdr_c als_c g3 ptb_2 ali_c">

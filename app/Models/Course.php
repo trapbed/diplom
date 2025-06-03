@@ -13,6 +13,7 @@ class Course extends Model
         'id_category',
         'title',
         'description',
+        'any_blocks',
         'image',
         'author',
         'student_count',

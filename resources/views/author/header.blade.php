@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="{{asset('css/style.css')}}">
     <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
     <script src="{{asset('js/jquery.min.js')}}"></script>
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <!-- <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}"> -->
 </head>
 <body class="pos_r">
@@ -21,11 +22,15 @@
         </div>
     @endif 
 
-    @if ($errors->any())
+    {{-- @if ($errors->any())
         @foreach ($errors->all() as $error)
             <script>alert("{{$error}}");</script>
         @endforeach
-    @endif
+    @endif --}}
+
+    @error('mess')
+        <script>alert('{{ $message }}');</script>
+    @enderror
 
     <div class="container_my df fdr_r ali_c g3 pos_f">
         <div class="df fdr_c ali_c g3 admin_navbar pos_r">
@@ -39,6 +44,7 @@
                 <a title="Курсы" href="{{route('main_author')}}"><img class="w2 h1" src="{{asset('img/courses.png')}}"></a>
                 <a title="Картинки для уроков" href="{{route('get_images_lesson')}}"><img class="w2 h1" src="{{asset('img/img.png')}}"></a>
                 <a title="Заявки доступа" href="{{route('application_courses')}}"><img class="w2 h1" src="{{asset('img/access.png')}}"></a>
+                <!-- <a title="Статистика" href="{{route('progress_author')}}"><img class="w2 h1" src="{{asset('img/icons/goal.webp')}}"></a> -->
             </div>
 
             <div class="df fdr_c pos_a b_1 g2">

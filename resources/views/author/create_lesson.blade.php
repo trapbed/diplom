@@ -2,6 +2,11 @@
 
 @section('title', "Создание урока  к курсу :'".$course->title."'")
 @section('content')
+
+    <div id="bg_modal_desc">
+
+    </div>
+
     <span class="ff_mr fsz_2">Создание урока к курсу : '{{$course->title}}'</span>
     <span class="ff_mr fsz_1_2 c_lr">Выбирайте изображения исключительно из <span class="td_u">'img/lessons'</span>, предварительно загрузив их <a href="">в меню->второй раздел.</a></span>
     <span class="ff_mr fsz_1">Уже есть: {{$course->lesson_count}}</span>
@@ -80,12 +85,58 @@
             $('#img').attr('disabled', true);
             $('#text').removeAttr('onclick');
             $('#img').removeAttr('onclick');
-            $("#img_imitation").click();
+            $('#bg_modal_desc').css('display', 'flex');
+            let all_img = document.createElement('div');
+            all_img.setAttribute('id', 'images_desc_course');
+            all_img.innerHTML =`
+                    <span class="als_s h3 ff_mr fsz_1_5 c_dp w57_5 h3 pos_f bg_lp h5 t_5_2 r_22_5 df ali_c">Выберите фото: </span>
+                    <div class="close_christ r_22" onclick="close_images_modal()">Х</div>
+                    <div id="wrapped_desc_course_choose">
+                        <div class="w60 h3"></div>
+                        @foreach ($images as $img)
+                            <div class="frame_for_desc_img">
+                                <img onclick="choose_img('{{ $img->name }}')" class="image_desc_course_choose w16" src="{{ asset( 'img/lessons/'.$img->name ) }}" alt="">
+                            </div>
+                        @endforeach
+                    </div>`;
+
+            $('#bg_modal_desc').append(all_img);
+
+
+            // $("#img_imitation").click();
 
             // console.log(preview.querySelectorAll('textarea').length + preview.querySelectorAll('input').length);
             // console.log(document.querySelectorAll('textarea', 'input').length);
         }
 
+        
+
+        function choose_img(img){
+            let new_i = document.createElement(`input`);
+                new_i.setAttribute('type', 'hidden');
+                new_i.setAttribute('id', 'img_'+count_2);
+                new_i.setAttribute('name', 'img['+all_count+']');
+                new_i.classList.add('dn', 'img_'+count_2, 'images');
+                new_i.setAttribute('value',img);
+                $("#preview").append(new_i);
+
+                image_preview = document.createElement(`div`);
+                image_preview.classList.add('w50', 'pos_r', 'img_'+count_2);
+                image_preview.innerHTML = `
+                    <img src="../img/lessons/`+img+`" class="img_`+count_2+`">
+                    <div id="del_img_`+count_2+`" onclick="minus_img('img_`+count_2+`', this)" class='img_`+count_2+` pos_a t_1 rm_5 fsz_2 paa_1 bg_dp br_03 c_lp minus_elem'>-</div>
+                `;
+                $("#preview").append(image_preview);
+// <input type="file" id="img_1" name="img[0]" class="dn img_1 images">
+                close_images_modal();
+
+            all_count++;
+        }
+
+        function close_images_modal(){
+            $('#bg_modal_desc').css('display', 'none');
+            $('#bg_modal_desc').children().remove();
+        }
   
         
         let count_2 = 1;

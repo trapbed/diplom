@@ -5,7 +5,7 @@
 <?php
     // dump($count_courses);
 ?>
-<div class="w100 h8"></div>
+<div class="w100 h5"></div>
 <div class="df fdr_r ali_c jc_spa g2 paa_1 br_1 bg_lp_a40">
     <form action="{{route('courses')}}" method="GET" class="df fdr_r ali_c jc_spa g2">
         <input value="{{$old_search}}" type="text" name="search" class="w26 fsz_1 ff_mr ou_n paa_0_5 h1 brc_lp br_1 bg_w br_1" placeholder="Поиск">
@@ -15,10 +15,11 @@
                 <option {{$category->id == $old_cat ? "selected" : ""}} value="{{$category->id}}">{{$category->title}}</option>
             @endforeach
         </select>
-        <select name="order" class="fsz_1 ff_mr c_dp w15 h1 paa_0_5 brc_lp bg_w br_1">
+        <select name="order" class="fsz_1 ff_mr c_dp w15 h1 paa_0_5 brc_lp bg_w br_1 ou_n">
             <option {{$old_order == "access DESC" ? "selected" : ""}} value="access DESC">Сначала популярные</option>
-            <option {{$old_order == "courses.created_at DESC" ? "selected" : ""}} value="courses.created_at DESC">Сначала новые</option>
-            <option {{$old_order == "courses.created_at ASC" ? "selected" : ""}} value="courses.created_at ASC">Сначала старые</option>
+            <option {{$old_order == "access DESC" ? "selected" : ""}} value="rate DESC">Выше рейтинг</option>
+            <option {{$old_order == "courses.created_at DESC" ? "selected" : ""}} value="courses.created_at ASC">Сначала новые</option>
+            <option {{$old_order == "courses.created_at ASC" ? "selected" : ""}} value="courses.created_at DESC">Сначала старые</option>
             <option {{$old_order == "title ASC" ? "selected" : ""}} value="title ASC">А-Я</option>
             <option {{$old_order == "title DESC" ? "selected" : ""}} value="title DESC">Я-А</option>
         </select>
@@ -66,6 +67,40 @@
                             @endif
                         @endif
                         
+                    <div class="rate_stars_catalog">
+                        <span>{{ (round($course->rate,2) != 0) ? 'Рейтинг: '.$course->rate : 'Нет отзывов'}}</span>
+                        <div class="stars_in_rate">
+                            @if (round($course->rate,2) != 0)
+                                @for ($i=1; $i<=$course->rate; $i++)
+                                    <svg width="2vmax" height="2vmax" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                        <polygon points="50,5 61,35 92,35 66,55 76,85 50,70 24,85 34,55 8,35 39,35" fill="#FFD700"/>
+                                    </svg>
+                                @endfor
+                                
+                                
+
+                                @if (substr($course->rate, -2) != '00')
+                                    <svg width="2vmax" height="2vmax" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                                        <defs>
+                                            <linearGradient id="half-transparent" x1="0%" y1="0%" x2="100%" y2="0%">
+                                                <stop offset="{{ substr($course->rate, -2) }}%" stop-color="#FFD700" stop-opacity="1"/> <!-- Непрозрачный -->
+                                                <stop offset="{{ 100-intval(substr($course->rate, -2)) }}%" stop-color="#FFD700" stop-opacity="0.1"/> <!-- Полупрозрачный -->
+                                            </linearGradient>
+                                        </defs>
+                                        <polygon points="50,5 61,35 92,35 66,55 76,85 50,70 24,85 34,55 8,35 39,35" 
+                                                fill="url(#half-transparent)"/>
+                                    </svg>
+                                @endif
+                            @endif
+                            
+                        </div>
+                        
+                    
+                        
+
+                        
+
+                    </div>
                     <div class="df dfr_r jc_spb">
                         <span class="paa_0_3 ff_ml c_w fsz_0_8 bg_dp br_03  ">{{$course->category}}</span>
                         <span class="fsz_0_8 ff_mr c_dp als_e">Автор: {{$course->author}}</span>

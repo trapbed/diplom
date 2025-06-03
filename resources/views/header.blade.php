@@ -8,6 +8,9 @@
     <script src="{{asset('js/jquery-3.7.1.min.js')}}"></script>
     <script src="{{asset('js/jquery.min.js')}}"></script>
     <script src="{{ asset('js/html2pdf.bundle.min.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.4/Chart.js"></script> -->
+    <!-- <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> -->
     <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script> -->
     <!-- <link rel="stylesheet" href="{{asset('css/bootstrap.min.css')}}"> -->
 </head>
@@ -21,6 +24,11 @@
         <div id="left_header_student">
             <a class="left_header_student" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>
             <a class="left_header_student" href="{{route('courses')}}">Все курсы</a>
+            @auth
+                <!-- <a class="left_header_student" href="{{route('courses')}}">Моя статистка</a> -->
+
+                
+            @endauth
             {{--<a class="td_n ff_m c_dp fsz_1" href="{{route('categories_main')}}">Категории</a>--}}
         </div>
         <div id="right_header_student">
@@ -29,6 +37,7 @@
                 <a class="buttons_dp_lp" href="{{route('login')}}">Войти</a>
             @endguest
             @auth
+                <a class="td_n ff_m c_dp fsz_1" href="{{route('my_statistics')}}">Моя статистка</a>
                 <a class="td_n ff_m c_dp fsz_1" href="{{route('student_account')}}">{{ Auth::user()->email }}</a>
                 <a class="td_n ff_m c_dp fsz_1" href="{{route('logout')}}"><img class="w1_5 h1_5" src="{{asset('img/logout.png')}}" alt=""></a>
 
@@ -41,7 +50,7 @@
     </div>
 </div>
     <!-- footer -->
-    <div class="df fdr_r ali_c jc_c w98_9vx bg_lp">
+    <div id="footer">
         <div class=" df fdr_r jc_spb w72 h8 paa_2 ">
             <div class="df fdr_c g1 w18 ">
                 <a class="td_n df fdr_r g1 ali_c h3" href="{{route('main')}}"><img class="w2_5 h2_5" src="{{asset('img/logo.png')}}" alt="LOGO"><span class="fsz_1 ff_m c_dp">Лига знаний</span></a>

@@ -17,6 +17,7 @@ return new class extends Migration
             $table->foreign('category')->references('id')->on('categories');
             $table->string('title');
             $table->text('description');
+            $table->json('any_blocks')->nullable();
             $table->string('image', 255);
             $table->bigInteger('author')->unsigned();
             $table->foreign('author')->references('id')->on('users');

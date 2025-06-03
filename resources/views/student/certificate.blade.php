@@ -8,19 +8,11 @@
     <link rel="stylesheet" href="{{ asset('css/style.css') }}">
 </head>
 <body class="df fdr_c ali_c">
-    <div id="certificate_one_course" class="df fdr_c  ali_c">
-        <div id="certificate_line_logo" class="df fdr_r g1">
-            <img class="h3 ptb_1" src="{{ asset('img/logo.png') }}" alt="">
-            <span class="ff_m fsz_1_2 ptb_2 c_dp">Лига знаний</span>
-        </div>
-        <div class="h1_5 w20"></div>
-        <div id="certificate_main_content">
-            <span class="fsz_1_2 w30 ta_c">Настоящий сертификат подтверждает, что</span>
-            <span class="c_dp fsz_1_5 ta_c w45">{{ Auth::user()->name }}</span>
-            <span class="fsz_1_2 ta_c">завершил(-а) изучение курса</span>
-            <span class="c_dp fsz_5">{{ $course->title }}</span>
-        </div>
-        <div class="h10 w20"></div>
+    <div id="certificate_one_course" class="df fdr_c pos_r ali_c">
+       
+        <div id="certificate_user">{{ Auth::user()->name }}</div>
+
+        <div id="certificate_course">{{ $course->title }}</div>
         <div class="df fdr_c ali_c g0_3 h4 als_e w24">
             <?php
                 switch (date("m")){
@@ -62,9 +54,7 @@
                             break;
                         }
             ?>
-            <span class="ff_mr fsz_1_2 ">{{ date('d  '.$month.'  Y') }}</span>
-            <hr id="certificate_date_ht">
-            <span class="ff_mr fsz_1_2">дата</span>
+            <span id="certificate_date">{{ date('d  '.$month.'  Y') }}</span>
         </div>
     </div>
 
@@ -80,8 +70,8 @@
                 margin: 0,
                 filename:     'certificate_{{ $course->title }}.pdf',
                 image:        { type: 'jpeg', quality: 1},
-                html2canvas:  { scale: 2  },
-                jsPDF:        { unit: 'mm', format: 'legal', orientation: 'landscape' }
+                html2canvas:  { scale: 3 },
+                jsPDF:        { format: 'A5', orientation: 'landscape' }
             };
             html2pdf().from(element).set(opt).save();
         }

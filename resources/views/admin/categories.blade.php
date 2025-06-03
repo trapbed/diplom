@@ -8,15 +8,16 @@
 ?>
 <div class="pos_a bg_lp_a40 t_0 w100 h100 r_1_5 df ali_c jc_c" id="background_modal">
   <div class="df fdr_c ali_c bg_w paa_2 pb_1 pos_r br_1">
-      <img onclick="close_modal()" class="pos_a t_0_5 r_0_5 w2_5" src="{{asset('img/close.png')}}" alt="close">
-      <span class="fsz_1_5 c_dp">Создание категории курса</span>
-      <form class="df fdr_c g1 ali_e paa_2" action="{{route('create_category')}}" method="POST">
-        @csrf
-        <input class="w16 h1_5 paa_0_5 ff_mr fsz_0_8 br_03 ou_n brc_lp" name="title" type="text">
+        <img onclick="close_modal()" class="pos_a t_0_5 r_0_5 w2_5" src="{{asset('img/close.png')}}" alt="close">
+        <span class="fsz_1_5 c_dp">Создание категории курса</span>
+        <form class="df fdr_c g1 ali_e paa_2" action="{{route('create_category')}}" method="POST" enctype="multipart/form-data">
+            @csrf
+            <!-- <input class="w16 h1_5 paa_0_5 ff_mr fsz_0_8 br_03 ou_n brc_lp" accept="image/*" name="img" type="file"> -->
+            <input class="w16 h1_5 paa_0_5 ff_mr fsz_0_8 br_03 ou_n brc_lp" name="title" type="text">
 
 
-        <input class="paa_0_3 br_03 c_w fsz_1 bg_dp ou_n" type="submit" value="Создать">
-      </form>
+            <input class="paa_0_3 br_03 c_w fsz_1 bg_dp ou_n" type="submit" value="Создать">
+        </form>
   </div>
 </div>
 <div class="df fdr_r g1 ali_c">

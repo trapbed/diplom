@@ -34,21 +34,17 @@
                             <!-- <button class="btn_dp_lp td_n paa_0_3 ff_m fsz_1 br_1 ou_n">Выбрать</button> -->
                         </div>
                     </div>
-                    <div onclick="choosed_type(event, 'sentence')" class="type_test">
-                        <img src="{{ asset('img/icons/contract.png') }}" alt="">
+                    <div onclick="choosed_type(event, 'some_answer')" class="type_test">
+                        <img src="{{ asset('img/icons/test.png') }}" alt="">
                         <div>
-                            <span>Несколько пропусков</span>
+                            <span>Несколько вариантов</span>
                             <!-- <button class="btn_dp_lp td_n paa_0_3 ff_m fsz_1 br_1 ou_n">Выбрать</button> -->
                         </div>
                     </div>
+
+                    
                 </div>
-                <div onclick="choosed_type(event, 'some_answer')" id="one_type">
-                    <img src="{{ asset('img/icons/test.png') }}" alt="">
-                    <div>
-                        <span>Несколько вариантов</span>
-                        <!-- <button class="btn_dp_lp td_n paa_0_3 ff_m fsz_1 br_1 ou_n">Выбрать</button> -->
-                    </div>
-                </div>
+                
             </div>
         </div>
     </div>
@@ -238,7 +234,11 @@
                             <span class="attention_task" id="attention_task_`+count_tasks+`">Минимум три варианта ответа</span>
                             <table id="all_various_`+count_tasks+`" class="w40 border_various">
                                 <tr class="border_various count_td_task_`+count_tasks+`" id="one_answer_various_td_`+count_tasks+`_1">
-                                    <td class='ff_m fsz_0_8 w40 df fdr_r jc_spb '><div><input class="one_answer_answers_`+count_tasks+`" id="get_value_one_answer_`+count_tasks+`_1" type="radio" name="input_various_`+count_tasks+`" value="Ответ 1" onclick="one_answer_change_inputs(event, '`+count_tasks+`', '1')"> Ответ 1 </div> <div class="w1_5 h1_5 paa_0_3 btn_dp_lp fsz_0_8 df ali_c jc_c br_03" onclick="del_one_answer_various(`+count_tasks+`,'1', 'one_answer_various_td_`+count_tasks+`_`+count_one_answer_td+`', event)">x</div></td>
+                                    <td class='ff_m fsz_0_8 w40 df fdr_r jc_spb '>
+                                        <div>
+                                            <input class="one_answer_answers_`+count_tasks+`" id="get_value_one_answer_`+count_tasks+`_1" type="radio" name="input_various_`+count_tasks+`" value="Ответ 1" onclick="one_answer_change_inputs(event, '`+count_tasks+`', '1')"> Ответ 1 
+                                        </div> 
+                                    <div class="w1_5 h1_5 paa_0_3 btn_dp_lp fsz_0_8 df ali_c jc_c br_03" onclick="del_one_answer_various(`+count_tasks+`,'1', 'one_answer_various_td_`+count_tasks+`_`+count_one_answer_td+`', event)">x</div></td>
                                 </tr>
                             </table>
                             <span class="ff_ml fsz_0_8">(отметьте правильный ответ)</span>
@@ -365,8 +365,6 @@
                     $('#preview_inputs').append(label_word);
 
                     break;
-                case 'sentence':
-                    break;
                 case 'some_answer':
                     let choosed_type_is_some_answer = document.createElement('div'); 
                     choosed_type_is_some_answer.classList.add('test_task');
@@ -465,6 +463,7 @@
             let now_number = $('.count_td_task_'+task).length+1;
             // count_one_answer_td++;
             count_one_answer_td = now_number;
+            console.log(count_tasks, count_one_answer_td);
             // console.log(now_number, count_one_answer_td);
             if(count_one_answer_td<3){
                 $('#attention_task_'+task).text('Минимум три варианта ответа');
@@ -485,7 +484,7 @@
                 let new_option = document.createElement('option');
                 new_option.setAttribute('selected', true);
                 new_option.setAttribute('value', val);
-                new_option.setAttribute('id', `input_various_1_`+count_one_answer_td);
+                new_option.setAttribute('id', `input_various_`+count_tasks+`_`+count_one_answer_td);
                 new_option.innerHTML = ``+val+``;
                 $('#one_answer_'+task+'_answers').append(new_option);
             }else{
@@ -498,8 +497,10 @@
             current_val = $('#get_value_one_answer_'+task+'_'+answer).val();
             $('.one_answer_answers_'+task).attr('checked', false);
             $('#get_value_one_answer_'+task+'_'+answer).attr('checked', true);
-            console.log(current_val);
-            $(`#one_answer_`+task+`_current`).val(current_val);
+            hidden_current = $('#one_answer_'+task+'_current').val();
+            console.log( hidden_current);
+            
+            $(`#one_answer_`+task+`_current`).attr('value',current_val);
         }
 
         function one_answer_change_question(task){

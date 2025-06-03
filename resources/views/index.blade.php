@@ -29,15 +29,31 @@
 <!-- popular courses-->
  <br>
  <br>
-    <div class="df fdr_c ali_c w94_9 g3  ">
+    <div class="df fdr_c ali_c w94_9 g6  h28 pos_r">
         <h3 class="fsz_1_5 ff_mr c_dp">Популярные курсы</h3>
-        <div class="df fdr_r w100 jc_spa">
+        <div id="popular_courses_index">
             @foreach ($courses as $course)
-            <a class="df fdr_c brc_lp br_03 hover_block_lg_lp w16 paa_1 g1 ">
-                <h4 class="ff_ml fsz_1 c_dp">{{$course->title}}</h4>
-                <span class="paa_0_3 ff_ml c_w fsz_0_8 bg_dp br_03 w_a">{{$course->category}}</span>
-                <span class="ff_mr fsz_0_8 c_dp">{{$course->description}}</span>
-            </a>
+            <div class="pos_r">
+                <a href="{{ route('one_course_main', ['id_course'=>$course->id]) }}" class="one_course_index">
+                    <div class="w16 h2 df jc_c">
+                        <img class="one_course_index_img" src="{{ asset('img/courses/'.$course->image) }}" alt="">
+                    </div>
+                    <h4 class="one_course_index_title">{{$course->title}}</h4>
+                    <span class="one_course_index_cat">{{$course->category}}</span>
+                    <div class="df fdr_r g0_3 h2 ali_c" title="{{round($course->one_rate, 2) }}">
+                        @for($i=1;$i<=5;$i++)
+                            <span class="star_rate_feedback">
+                                @if($i<=$course->one_rate)
+                                    &#9733
+                                @else
+                                    &#9734
+                                @endif
+                            </span>
+                        @endfor
+                    </div>
+                    <span class="ff_mr fsz_0_8 c_dp">{{mb_substr($course->description, 0,80)}}...</span>
+                </a>
+            </div>
             @endforeach
         </div>
     </div>

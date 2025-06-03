@@ -9,7 +9,7 @@
                 <span class="fsz_1_5 c_dp">Курс: {{$lesson->course}}</span>
                 <span class="fsz_1_2 c_dp">Урок: {{$lesson->title}}</span>
             </div>
-            <div class="w78 df fdr_c g1 ff_ml fsz_1">
+            <div class="w78 df fdr_c g0_3 ff_ml fsz_1">
                 @foreach ($content as $key=>$val)
                     @foreach ($val as $k=>$v)
                         @if($k == 'img')
@@ -31,7 +31,7 @@
                 <span class="fsz_1_2 c_dp">Тест: {{$lesson->title}}</span>
             </div>
         </div>
-        <div class="w78 df fdr_c g1 ff_ml fsz_1">
+        <div class="w78 df fdr_c g0_3 ff_ml fsz_1">
             {{-- dd($content) --}}
             @foreach ($content as $key=>$val)
                 @switch($key)

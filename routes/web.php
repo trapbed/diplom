@@ -23,6 +23,7 @@ use App\Http\Controllers\UserController;
 // });
 
 Route::get('/html_to_pdf', function(){ return view('html_to_pdf');})->name('html_to_pdf');
+Route::get('/start_study/{id_course}', [UserController::class, 'start_study'])->name('start_study');
 
 
 Route::middleware('no_admin_no_author')->group(function(){
@@ -72,7 +73,6 @@ Route::middleware('auth')->group(function(){
     
     Route::middleware('student')->group(function(){
         // dd('dcsj');
-        Route::get('/start_study/{id_course}', [UserController::class, 'start_study'])->name('start_study');
         Route::get('/complete_course/{id_course}', [UserController::class, 'complete_course'])->name('complete_course');
         Route::get('/one_lesson_student/{id}/{course}', [LessonController::class, 'one_lesson_student'])->name('one_lesson_student');
         Route::get('/my_courses', [CourseController::class, 'my_courses'])->name('my_courses');
@@ -80,6 +80,10 @@ Route::middleware('auth')->group(function(){
         Route::post('/check_test_student', [LessonController::class, 'check_test_student'])->name('check_test_student');
         Route::get('/certificate/{id_course}', [LessonController::class, 'certificate'])->name('certificate');
         // Route::get('/result_test/{before_id?}/{next_id?}', [UserController::class, 're'])->name('check_test_student');
+
+        Route::get('/my_statistics', [UserController::class, 'my_statistics'])->name('my_statistics');
+
+        Route::post('/send_rate_course', [CourseController::class, 'send_rate_course'])->name('send_rate_course');
     });
 
     // $id_user, $id_appl, $role, $status_appl
@@ -90,6 +94,7 @@ Route::middleware('auth')->group(function(){
         Route::get('/author/courses', [CourseController::class, 'main_courses'])->name('main_author');
         Route::get('/create_course_show', [CourseController::class,'create_course_show'])->name('create_course_show');
         Route::post('/create_course', [CourseController::class,'create_course'])->name('create_course');
+        Route::get('del_course/{id}', [CourseController::class, 'del_course'])->name('del_course');
         Route::get('author/update_course_show/{id_course}', [CourseController::class, 'update_course_show'])->name('update_course_show');
         Route::post('/author/update_course', [CourseController::class, 'update_course'])->name('update_course');
         Route::get('/author_more_info_course/{id}', [CourseController::class, 'author_more_info_course'])->name('author_more_info_course');
@@ -97,6 +102,12 @@ Route::middleware('auth')->group(function(){
         Route::post('/create_lesson', [LessonController::class, 'create_lesson'])->name('create_lesson');
         Route::get('/remove_lesson/{id_less}/{id_course}', [LessonController::class, 'remove_lesson'])->name('remove_lesson');
         Route::get('/one_lesson/{id}', [LessonController::class, 'one_lesson'])->name('one_lesson');
+        Route::get('/update_lesson_view/{id}', [LessonController::class, 'update_lesson_view'])->name('update_lesson_view');
+        Route::post('/update_lesson', [LessonController::class, 'update_lesson'])->name('update_lesson');
+        
+        Route::get('/progress_author', [LessonController::class, 'progress_author'])->name('progress_author');
+        // Route::get('/update_test_view/{id}', [LessonController::class, 'update_test_view'])->name('update_test_view');
+        // Route::post('/update_test', [LessonController::class, 'update_test'])->name('update_test');
 
         Route::get('/create_test_show/{id}', [CourseController::class, 'data_for_create_test'])->name('create_test_show');
         Route::post('/create_test', [LessonController::class, 'create_lesson'])->name('create_test');
@@ -107,6 +118,9 @@ Route::middleware('auth')->group(function(){
         
         Route::get('/application_courses', [CourseController::class, 'application_courses'])->name('application_courses');
         Route::get('/send_access/{course_id}/{wish_access}', [CourseController::class, 'send_access'])->name('send_access');
+
+
+        Route::post('/send_img_to_desc_course', [CourseController::class, 'send_img_to_desc_course'])->name('send_img_to_desc_course');
     });
 
 

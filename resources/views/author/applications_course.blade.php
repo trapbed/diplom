@@ -39,7 +39,7 @@
                                 break;
                         }
                     ?>
-                    <div class="h1 paa_0_3 br_03 {{ $bg_color }} {{ $color }}">{{$appl->status}}</div>
+                    <div class=" paa_0_3 br_03 fsz_0_8 df fdr_r ali_c jc_c {{ $bg_color }} {{ $color }}">{{$appl->status}}</div>
                 </div>
             @endforeach
         </div>

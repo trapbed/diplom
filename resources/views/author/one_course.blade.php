@@ -24,8 +24,7 @@
         }
     ?>
 
-    <div class=" w74 h4"></div>
-    <div class="w74 df fdr_r g3  ">
+    <div class="w74 df fdr_r g1  ">
         <div class="df fdr_c  g1_5">
             <h2 class="fsz_2_3 ff_ml c_dp">{{$course->title}}</h2>
             <div class="df fdr_r g2">
@@ -65,10 +64,13 @@
                     <div>
                         <img class="w2 h2" src="{{ asset('img/icons/'.$img_les_test.'.png') }}" alt="">
                     </div>
-                    <span class="w30">{{$lesson->title}}</span> <div class="df fdr_r g1">
+                    <span class="w30">{{$lesson->title}}</span> 
+                    <div class="df fdr_r g1">
                         <a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('one_lesson', $lesson->id)}}">Смотреть</a> 
-                        @if ($course->student_count <= 0)
-                            <a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03" href="{{route('remove_lesson', ['id_less'=>$lesson->id, 'id_course'=>$course->id])}}">Удалить</a></div>
+                        @if ($course->course_access == '0')
+                            <a class="paa_0_5 fs_1 ff_mr btn_lp_dp td_n br_03 ch_filter_lp" href="{{route('update_lesson_view', $lesson->id)}}"><img class="w1_5" src="{{ asset('img/pen.png') }}" alt="edit lesson"></a> 
+                            <a class="paa_0_5 fs_1 ff_mb btn_lp_dp td_n br_03 ch_filter_lp" href="{{route('remove_lesson', ['id_less'=>$lesson->id, 'id_course'=>$course->id])}}"><img class="w1_5" src="{{ asset('img/icons/del.webp') }}" alt="del"></a>
+                    </div>
                         @endif
                 </li>
             @endforeach
