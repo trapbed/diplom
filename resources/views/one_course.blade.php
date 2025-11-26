@@ -460,7 +460,15 @@
             $('#set_rate_user').css('display', 'flex');
         }
         function del_feedback(id){
-
+            let ask_del_feedback = confirm('Вы точно хотите удалить отзыв?');
+            if(ask_del_feedback){
+                let ask_del_rate = confirm('Хотите удалить отзыв вместе с оценкой?');
+                if(ask_del_rate){  
+                    window.location.href = "../del_feedback/"+id+"/true";
+                }else{
+                    window.location.href = "../del_feedback/"+id+"/false";
+                } 
+            }
         }
 
         
